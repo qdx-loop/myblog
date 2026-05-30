@@ -1,3 +1,7 @@
+\[markup.goldmark.parser]
+
+autoWrapText = true
+
 \---
 
 title: "A"
