@@ -4,7 +4,7 @@ title: "A"
 
 date: "2026-05-30T21:28:04+08:00"
 
-draft:false
+draft: false
 
 categories: 其它
 
