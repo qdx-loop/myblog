@@ -6,9 +6,9 @@ draft = false
 
 title = 'Why'
 
-categories = \[""]
+categories = \["其它"]
 
-tags = \[""]
+tags = \["其它"]
 
 +++
 
