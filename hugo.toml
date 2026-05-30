@@ -1,23 +1,55 @@
-baseURL = 'https://yourname.ml/'
+# ==========================================
+# 基础配置
+# ==========================================
+baseURL = 'https://yourname.ml/'  # 替换为你的实际域名
 languageCode = 'zh-cn'
 title = '我的博客'
 theme = 'PaperMod'
 
+# ==========================================
+# 搜索功能必需配置（必须放在params之前）
+# ==========================================
+[outputs]
+  home = ["HTML", "RSS", "JSON"]  # 生成搜索索引必需
+
+# ==========================================
+# 合并后的PaperMod主题配置（唯一的[params]表）
+# ==========================================
 [params]
+  # 原有的基础配置
   author = 'qdx'
   ShowReadingTime = true
   ShowShareButtons = false
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
+  
+  # 首页信息配置
+  [params.homeInfoParams]
+    Title = "Hi there 👋"
+    Content = "欢迎来到qdx的博客"
+  
+  # 社交图标配置
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/"
+  
+  # 搜索功能配置
+  enableSearch = true
+  
+  [params.search]
+    enable = true
+    limit = 20
+    
+    # 修复：改为标准TOML表格式，避免多行内联表语法错误
+    [params.search.fuseOpts]
+      keys = ["title", "content", "summary", "tags", "categories"]
+      threshold = 0.3
+      location = 0
+      distance = 100
 
-[params.homeInfoParams]
-  Title = "Hi there 👋"
-  Content = "欢迎来到我的博客"
-
-[[params.socialIcons]]
-  name = "github"
-  url = "https://github.com/"
-
+# ==========================================
+# 导航菜单配置
+# ==========================================
 [[menu.main]]
   identifier = "archives"
   name = "归档"
