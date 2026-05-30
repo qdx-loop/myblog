@@ -1,14 +1,10 @@
-\[markup.goldmark.parser]
-
-autoWrapText = true
-
-\---
-
 title: "A"
 
 date: 2026-05-30T21:28:04+08:00
 
 draft: false
+
+<taxonomies>
 
 categories: \["其它"]
 
