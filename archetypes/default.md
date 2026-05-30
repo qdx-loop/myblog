@@ -1,8 +1,8 @@
 ---
 title: '{{ replace .File.ContentBaseName `-` ` ` | title }}'
 date: '{{ .Date }}'
-draft: true
-author: ""
+draft: false
+author: "qdx"
 tags: [""]
 categories: [""]
 description: ""
