@@ -2,9 +2,9 @@
 
 \# 基础必填字段
 
-title: '{{ replace .File.ContentBaseName "-" " " | title }}'  # 自动从文件名生成标题
+title: 'Test'  # 自动从文件名生成标题
 
-date: '{{ .Date }}'  # 自动填充当前时间
+date: '2026-05-30T21:24:00+08:00'  # 自动填充当前时间
 
 draft: true  # 是否为草稿（true=草稿不发布，false=发布）
 
@@ -53,4 +53,6 @@ hidemeta: false  # 是否隐藏文章元信息（日期、阅读时间等）
 disableShare: true  # 是否禁用分享按钮
 
 \---
+
+测试测试
 
