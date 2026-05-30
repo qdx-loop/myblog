@@ -3,7 +3,7 @@
 # ==========================================
 baseURL = 'https://qdx.dpdns.org/'  # 替换为你的实际域名
 locale = 'zh-CN'
-title = '我的博客'
+title = 'qdx的博客'
 theme = 'PaperMod'
 
 # ==========================================
@@ -25,7 +25,7 @@ theme = 'PaperMod'
   
   # 首页信息配置
   [params.homeInfoParams]
-    Title = "Hi there 👋"
+    Title = "Hi there你好呀 👋"
     Content = "欢迎来到qdx的博客"
   
 
@@ -48,16 +48,22 @@ theme = 'PaperMod'
 # 导航菜单配置
 # ==========================================
 [[menu.main]]
+  identifier = "home"
+  name = "首页"
+  url = "/"          # 指向根目录，也就是首页
+  weight = 1         # 权重设为1，排在最左边
+
+[[menu.main]]
   identifier = "tags"
   name = "标签"
   url = "/tags/"
   weight = 5
 
 [[menu.main]]
-  identifier = "categories"  # 唯一标识符，不能和其他菜单项重复
-  name = "分类"              # 导航栏上显示的文字
-  url = "/categories/"       # 分类页面的标准URL（自动生成）
-  weight = 4                 # 排序权重，数字越小越靠左
+  identifier = "categories"  
+  name = "分类"              
+  url = "/categories/"    
+  weight = 4               
 
 [[menu.main]]
   identifier = "archives"
