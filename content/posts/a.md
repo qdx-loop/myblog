@@ -1,16 +1,16 @@
-title: "A"
-
-date: 2026-05-30T21:28:04+08:00
-
-draft: false
-
-<taxonomies>
-
-categories: [" 其它"]
-
-tags:["其它"]
-
 ---
+title: "Another Cool Post"
+date: 2023-10-27T10:00:00+08:00
+draft: true
+author: "Your Name"
+tags: ["tech", "hugo"]
+categories: ["Tutorials"]
+description: "A brief description of the post."
+---
+
+## 介绍
+
+在这里写下文章的引言部分。
 
 测试
 
