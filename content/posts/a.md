@@ -1,7 +1,7 @@
 ---
 title: "Another Cool Post"
 date: 2023-10-27T10:00:00+08:00
-draft: true
+draft: false
 author: "Your Name"
 tags: ["tech", "hugo"]
 categories: ["Tutorials"]
