@@ -6,11 +6,11 @@ draft: false
 
 <taxonomies>
 
-categories: \["其它"]
+categories: 其它"
 
-tags: \["其它"]
+tags: 其它
 
-\---
+---
 
 测试
 
