@@ -1,7 +1,7 @@
 # ==========================================
 # 基础配置
 # ==========================================
-baseURL = 'https://yourname.ml/'  # 替换为你的实际域名
+baseURL = 'https://qdx.dpdns.org/'  # 替换为你的实际域名
 locale = 'zh-CN'
 title = '我的博客'
 theme = 'PaperMod'
