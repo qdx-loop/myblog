@@ -28,10 +28,7 @@ theme = 'PaperMod'
     Title = "Hi there 👋"
     Content = "欢迎来到qdx的博客"
   
-  # 社交图标配置
-  [[params.socialIcons]]
-    name = "github"
-    url = "https://github.com/"
+
   
   # 搜索功能配置
   enableSearch = true
@@ -50,6 +47,18 @@ theme = 'PaperMod'
 # ==========================================
 # 导航菜单配置
 # ==========================================
+[[menu.main]]
+  identifier = "tags"
+  name = "标签"
+  url = "/tags/"
+  weight = 5
+
+[[menu.main]]
+  identifier = "categories"  # 唯一标识符，不能和其他菜单项重复
+  name = "分类"              # 导航栏上显示的文字
+  url = "/categories/"       # 分类页面的标准URL（自动生成）
+  weight = 4                 # 排序权重，数字越小越靠左
+
 [[menu.main]]
   identifier = "archives"
   name = "归档"
