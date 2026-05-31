@@ -77,3 +77,9 @@ theme = 'PaperMod'
   name = "搜索"
   url = "/search/"
   weight = 10
+
+[params.artalk]
+enable = true
+server = "https://reliable-sherbet-14fe33.netlify.app/"  # ✅ 这里填 Netlify 给你的完整地址
+site = "qdx.dpdns.org"  # 随便填，比如 "我的博客"
+
