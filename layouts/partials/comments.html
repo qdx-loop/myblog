@@ -1,0 +1,13 @@
+<script src="https://unpkg.com/@waline/client@v2/dist/waline.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css" />
+
+<div id="waline" style="max-width: 800px; margin: 0 auto; padding: 20px;"></div>
+<script>
+  Waline.init({
+    el: '#waline',
+    serverURL: 'https://wa-murex-nine.vercel.app',
+    lang: 'zh-CN',
+    dark: 'auto',
+    requiredMeta: ['nick', 'mail']
+  });
+</script>
