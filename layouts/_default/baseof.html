@@ -1,0 +1,19 @@
+{{- if .IsPage }}
+<!-- Artalk -->
+<link href="https://unpkg.com/artalk@2/dist/Artalk.css" rel="stylesheet" />
+<script src="https://unpkg.com/artalk@2/dist/Artalk.js"></script>
+
+<div id="artalk" style="max-width: 800px; margin: 0 auto; padding: 20px;"></div>
+<script>
+  Artalk.init({
+    el: '#artalk',
+    server: 'https://reliable-sherbet-14fe33.netlify.app',
+    site: 'qdx.dpdns.org',
+    placeholder: '说点什么...',
+    noComment: '暂无评论，快来抢沙发吧！',
+    sendBtn: '发送',
+    avatar: 'identicon',
+    requiredMeta: ['nick']
+  });
+</script>
+{{- end }}
