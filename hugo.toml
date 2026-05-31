@@ -77,5 +77,4 @@ theme = 'PaperMod'
   url = "/search/"
   weight = 10
 
-[params]
   comments = true
