@@ -45,6 +45,23 @@ theme = 'PaperMod'
       location = 0
       distance = 100
 
+  # ==========================================
+  # Waline 评论系统配置
+  # ==========================================
+  [params.waline]
+    enable = true
+    serverURL = "https://inspiring-unicorn-f8f36a.netlify.app/.netlify/functions/comment"
+    placeholder = "欢迎评论~"
+    # 登录方式：enable(允许登录)|disable(禁用登录)|force(强制登录)
+    login = "enable"
+    # 必填项：["nick"] 表示只需要昵称（用户名）
+    #        ["nick", "mail"] 表示需要昵称和邮箱
+    requiredMeta = ["nick"]
+    wordLimit = 0
+    pageSize = 10
+    upload = true
+    emoji = true
+
 # ==========================================
 # 导航菜单配置
 # ==========================================
@@ -78,8 +95,5 @@ theme = 'PaperMod'
   url = "/search/"
   weight = 10
 
-[params.artalk]
-enable = true
-server = "https://reliable-sherbet-14fe33.netlify.app/"  # ✅ 这里填 Netlify 给你的完整地址
-site = "qdx.dpdns.org"  # 随便填，比如 "我的博客"
+
 
