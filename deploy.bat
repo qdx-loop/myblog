@@ -3,9 +3,12 @@ chcp 65001 >nul
 title Hugo Deploy Script
 
 cd /d "%~dp0"
-echo [DIR] %cd%
+echo ========================================
+echo      Hugo Smart Deploy Script
+echo ========================================
 echo.
 
+:: Check git repo
 git rev-parse --git-dir >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] Not a git repository
@@ -13,34 +16,70 @@ if errorlevel 1 (
     exit /b 1
 )
 
-for /f "tokens=*" %%a in ('git remote get-url origin 2^>nul') do set "REMOTE_URL=%%a"
-echo [REMOTE] %REMOTE_URL%
+:: Select deploy mode
+echo [SELECT] Choose deploy mode:
+echo   1. Deploy ALL content
+echo   2. Deploy POSTS only (content/posts/)
 echo.
+choice /C 12 /N /M "Select [1/2]: "
 
-git diff --quiet HEAD 2>nul
-if errorlevel 1 (
-    echo [INFO] Local changes detected
-    echo [ACTION] Adding changes...
-    git add -A
-    set "COMMIT_MSG=Update: %date% %time%"
-    echo [ACTION] Committing: %COMMIT_MSG%
-    git commit -m "%COMMIT_MSG%" 2>nul
-    if errorlevel 1 (
-        echo [INFO] No changes to commit
-    ) else (
-        echo [OK] Committed
-    )
+if errorlevel 2 (
+    set "MODE=posts"
+    echo [MODE] Deploy POSTS only
 ) else (
-    echo [INFO] No local changes
+    set "MODE=all"
+    echo [MODE] Deploy ALL content
 )
 
 echo.
-echo [ACTION] Checking remote...
-git fetch origin master 2>nul
 
-git rev-list --left-right --count HEAD...origin/master > temp_check.txt 2>nul
+:: Add files based on mode
+if "%MODE%"=="posts" (
+    echo [ACTION] Adding posts...
+    git add content/posts/ >nul 2>&1
+) else (
+    echo [ACTION] Adding all changes...
+    git add -A >nul 2>&1
+)
+
+:: Check if there are changes to commit
+git diff --cached --quiet >nul 2>&1
 if errorlevel 1 (
-    echo [INFO] Cannot check remote, trying push...
+    echo [ACTION] Committing changes...
+    git commit -m "Update" > commit_output.txt 2>&1
+    if errorlevel 1 (
+        type commit_output.txt
+        echo [ERROR] Commit failed, output copied to clipboard
+        type commit_output.txt | clip
+        del commit_output.txt 2>nul
+        pause
+        exit /b 1
+    )
+    del commit_output.txt 2>nul
+    echo [OK] Committed
+) else (
+    echo [INFO] No changes to commit
+)
+
+echo.
+
+:: Check remote status
+echo [ACTION] Checking remote status...
+git fetch origin master > fetch_output.txt 2>&1
+if errorlevel 1 (
+    echo [ERROR] Failed to fetch remote
+    type fetch_output.txt
+    echo [ERROR] Error copied to clipboard
+    type fetch_output.txt | clip
+    del fetch_output.txt 2>nul
+    pause
+    exit /b 1
+)
+del fetch_output.txt 2>nul
+
+git rev-list --left-right --count HEAD...origin/master > temp_check.txt 2>&1
+if errorlevel 1 (
+    echo [INFO] Cannot compare, trying push directly...
     goto PUSH
 )
 
@@ -54,37 +93,47 @@ echo [STATUS] Local ahead: %LOCAL_AHEAD%
 echo [STATUS] Remote ahead: %REMOTE_AHEAD%
 echo.
 
+:: Handle different scenarios
 if %LOCAL_AHEAD%==0 if %REMOTE_AHEAD%==0 (
     echo [DONE] Already up to date
     goto DONE
 )
 
 if %LOCAL_AHEAD%==0 if %REMOTE_AHEAD% GTR 0 (
-    echo [INFO] Remote is ahead
+    echo [INFO] Remote is ahead of local
     choice /C YN /N /M "Pull remote changes [Y/N]? "
     if errorlevel 2 (
         echo [CANCEL] Cancelled
         goto DONE
     )
-    echo [ACTION] Pulling...
-    git pull origin master
+    echo [ACTION] Pulling remote changes...
+    git pull origin master > pull_output.txt 2>&1
     if errorlevel 1 (
-        echo [ERROR] Pull failed, force reset...
-        git fetch origin master
-        git reset --hard origin/master
-        echo [OK] Reset done
+        type pull_output.txt
+        echo [ERROR] Pull failed, output copied to clipboard
+        type pull_output.txt | clip
+        del pull_output.txt 2>nul
+        pause
+        exit /b 1
     )
+    del pull_output.txt 2>nul
+    echo [OK] Pulled successfully
     goto DONE
 )
 
 if %LOCAL_AHEAD% GTR 0 if %REMOTE_AHEAD%==0 (
-    echo [INFO] Pushing local changes...
+    echo [INFO] Local is ahead, ready to push
     goto PUSH
 )
 
 if %LOCAL_AHEAD% GTR 0 if %REMOTE_AHEAD% GTR 0 (
-    echo [WARN] Conflict detected
-    echo [OPTION] 1.Force push  2.Pull merge  3.Cancel
+    echo [WARN] Conflict detected! Both local and remote have changes
+    echo.
+    echo [OPTIONS]
+    echo   1. Force push (overwrite remote)
+    echo   2. Pull and merge
+    echo   3. Cancel
+    echo.
     choice /C 123 /N /M "Select [1/2/3]: "
     
     if errorlevel 3 (
@@ -94,72 +143,93 @@ if %LOCAL_AHEAD% GTR 0 if %REMOTE_AHEAD% GTR 0 (
     
     if errorlevel 2 (
         echo [ACTION] Pulling and merging...
-        git pull origin master --rebase
+        git pull origin master --rebase > pull_output.txt 2>&1
         if errorlevel 1 (
-            echo [ERROR] Merge failed
+            type pull_output.txt
+            echo [ERROR] Merge failed, output copied to clipboard
+            type pull_output.txt | clip
+            del pull_output.txt 2>nul
             pause
             exit /b 1
         )
+        del pull_output.txt 2>nul
+        echo [OK] Merged successfully
         goto PUSH
     )
     
     if errorlevel 1 (
-        echo [WARN] Force pushing...
+        echo [WARN] Force pushing to remote...
         goto PUSH_FORCE
     )
 )
 
 :PUSH
 echo.
-echo [ACTION] Pushing...
+echo [ACTION] Pushing to remote...
 
+:: Try HTTPS first
 echo [ACTION] Trying HTTPS...
-git push https://github.com/qdx-loop/myblog.git master 2>nul
+git push https://github.com/qdx-loop/myblog.git master > push_output.txt 2>&1
 if not errorlevel 1 (
+    del push_output.txt 2>nul
     echo [OK] HTTPS push success
     goto DEPLOY
 )
 
+:: HTTPS failed, try SSH
 echo [INFO] HTTPS failed, trying SSH...
-git push git@github.com:qdx-loop/myblog.git master 2>nul
+git push git@github.com:qdx-loop/myblog.git master > push_output.txt 2>&1
 if not errorlevel 1 (
+    del push_output.txt 2>nul
     echo [OK] SSH push success
     goto DEPLOY
 )
 
+:: Both failed
+type push_output.txt
 echo [ERROR] Both HTTPS and SSH failed
-echo [INFO] Check network or permissions
+echo [ERROR] Error output copied to clipboard
+ type push_output.txt | clip
+del push_output.txt 2>nul
 pause
 exit /b 1
 
 :PUSH_FORCE
 echo.
-echo [WARN] Force pushing...
+echo [ACTION] Force pushing to remote...
 
+:: Try HTTPS first
 echo [ACTION] Trying HTTPS...
-git push -f https://github.com/qdx-loop/myblog.git master 2>nul
+git push -f https://github.com/qdx-loop/myblog.git master > push_output.txt 2>&1
 if not errorlevel 1 (
+    del push_output.txt 2>nul
     echo [OK] HTTPS force push success
     goto DEPLOY
 )
 
+:: HTTPS failed, try SSH
 echo [INFO] HTTPS failed, trying SSH...
-git push -f git@github.com:qdx-loop/myblog.git master 2>nul
+git push -f git@github.com:qdx-loop/myblog.git master > push_output.txt 2>&1
 if not errorlevel 1 (
+    del push_output.txt 2>nul
     echo [OK] SSH force push success
     goto DEPLOY
 )
 
+:: Both failed
+type push_output.txt
 echo [ERROR] Both HTTPS and SSH failed
-echo [INFO] Check network or permissions
+echo [ERROR] Error output copied to clipboard
+type push_output.txt | clip
+del push_output.txt 2>nul
 pause
 exit /b 1
 
 :DEPLOY
 echo.
-echo ================================
-echo      Push Success!
-echo ================================
+echo ========================================
+echo        Push Success!
+echo ========================================
 echo.
 echo [INFO] Waiting for Cloudflare Pages...
 echo [INFO] Usually takes 1-2 minutes
