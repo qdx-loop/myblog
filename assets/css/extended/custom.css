@@ -1,143 +1,301 @@
 /* ==========================================
-   ChowRay.org - 文人风骨与极客之魂
-   全站样式终级定制版
+   Minimal Modern Style
+   Clean, whitespace-focused, elegant
    ========================================== */
 
-/* 1. 全局变量定义 */
+/* 1. CSS Variables */
 :root {
-  /* 字体栈：标题优先宋体（人文感），正文优先系统黑体（易读性） */
-  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", "Times New Roman", serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
-
-  /* 品牌色：极客蓝（Geek Blue） */
-  --geek-blue: #3b82f6;
-  --geek-blue-rgb: 59, 130, 246;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #888;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-border: #eaeaea;
+  --color-accent: #0066cc;
+  --color-accent-hover: #0052a3;
 }
 
-/* 2. 字体与排版 */
-h1, h2, h3, h4, h5, h6, .entry-header h2, .post-title {
-  font-family: var(--font-serif) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
+/* 2. Global Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* 文章详情页大标题（控制大小，建立层级） */
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. Typography Scale */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text);
+  margin-bottom: 0.8em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.1rem; }
+
+/* Post title - elegant but not oversized */
 .post-title {
-  font-size: 2.5rem !important; /* 约 40px，确立视觉中心 */
-  line-height: 1.3 !important;
-  margin-bottom: 20px !important;
-}
-
-/* 首页 Profile Mode 大标题 */
-.profile .profile_inner h1 {
-  font-family: var(--font-serif) !important;
-  font-size: 3rem !important;
+  font-size: 2rem !important;
   font-weight: 700 !important;
-  letter-spacing: 1px !important;
+  line-height: 1.25 !important;
+  margin-bottom: 0.5em !important;
+  letter-spacing: -0.02em;
 }
 
-/* 正文与段落 */
-.post-content p, .post-content li, .post-content td {
-  font-family: var(--font-sans);
-  font-size: 1.05rem; /* 约 16.8px，黄金阅读尺寸 */
-  line-height: 1.8;   /* 舒适行距 */
-  color: #333;
+/* Profile page title */
+.profile .profile_inner h1 {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
 }
 
-/* 3. 交互与链接（极客蓝） */
+/* 4. Body Text */
+.post-content p,
+.post-content li,
+.post-content td {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text);
+  margin-bottom: 1.2em;
+}
+
+.post-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* 5. Links - subtle and elegant */
 a {
-  color: var(--geek-blue);
+  color: var(--color-accent);
   text-decoration: none;
-  transition: color 0.2s ease, border-bottom 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 a:hover {
-  color: #2563eb; /* 悬停加深 */
-  border-bottom: 1px solid #2563eb;
+  color: var(--color-accent-hover);
+  text-decoration: underline;
 }
 
-/* 文章内链接 */
+/* Post content links */
 .post-content a {
-  border-bottom: 1px dashed var(--geek-blue);
+  border-bottom: 1px solid transparent;
 }
 
 .post-content a:hover {
-  border-bottom: 1px solid #2563eb;
+  border-bottom-color: var(--color-accent);
+  text-decoration: none;
 }
 
-/* 4. 代码块（保持极客感） */
-code, pre {
-  font-family: var(--font-mono) !important;
-  font-size: 0.9rem;
-}
-
-/* 5. 引用块（增加书卷气） */
-blockquote {
-  font-family: var(--font-serif);
-  font-style: italic;
-  border-left: 4px solid var(--geek-blue);
-  background: rgba(var(--geek-blue-rgb), 0.05);
-  padding: 1rem 1.5rem;
-  margin: 1.5rem 0;
-}
-
-/* 6. 首页副标题与描述 */
-.profile .profile_inner .profile-description {
-  font-family: var(--font-sans);
-  font-size: 1.1rem;
-  color: #666;
-  margin-top: 10px;
-}
-
-/* 7. 导航栏 */
-.nav a {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
-
-/* 8. 文章元信息（日期、标签等） */
-.post-meta {
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: #888;
-}
-
-/* 9. 标签样式 */
-.post-tags a {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  background: rgba(var(--geek-blue-rgb), 0.1);
-  color: var(--geek-blue);
-  padding: 2px 8px;
+/* 6. Code Blocks */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-bg-secondary);
+  padding: 0.2em 0.4em;
   border-radius: 4px;
+  color: #e83e8c;
+}
+
+pre {
+  background: #f4f4f4;
+  padding: 1.2em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: 0.875rem;
+}
+
+/* 7. Blockquotes - clean and minimal */
+blockquote {
+  border-left: 3px solid var(--color-border);
+  padding-left: 1.2em;
+  margin: 1.5em 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+blockquote p {
+  margin-bottom: 0.5em;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* 8. Lists */
+.post-content ul,
+.post-content ol {
+  margin: 1.2em 0;
+  padding-left: 1.8em;
+}
+
+.post-content li {
+  margin-bottom: 0.4em;
+}
+
+/* 9. Images */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5em 0;
+}
+
+/* 10. Horizontal Rule */
+hr {
   border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2em 0;
+}
+
+/* 11. Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: 0.75em 1em;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+}
+
+/* 12. Post Meta */
+.post-meta {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5em;
+}
+
+.post-meta a {
+  color: var(--color-text-muted);
+}
+
+.post-meta a:hover {
+  color: var(--color-accent);
+}
+
+/* 13. Tags */
+.post-tags a {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  padding: 0.3em 0.8em;
+  border-radius: 20px;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+  transition: all 0.2s ease;
 }
 
 .post-tags a:hover {
-  background: var(--geek-blue);
+  background: var(--color-accent);
   color: white;
-  border: none;
+  text-decoration: none;
 }
 
-/* 10. 分页与按钮 */
+/* 14. Navigation */
+.nav a {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.nav a:hover {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* 15. Pagination */
 .pagination a {
-  font-family: var(--font-sans);
-  border: 1px solid #ddd;
-  padding: 8px 16px;
+  padding: 0.6em 1.2em;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
 }
 
 .pagination a:hover {
-  border-color: var(--geek-blue);
-  background: rgba(var(--geek-blue-rgb), 0.05);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  text-decoration: none;
 }
 
-/* 11. 移动端适配 */
+/* 16. Footer */
+.footer {
+  border-top: 1px solid var(--color-border);
+  padding-top: 2em;
+  margin-top: 3em;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* 17. Scrollbar - minimal */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* 18. Selection */
+::selection {
+  background: rgba(0, 102, 204, 0.15);
+  color: inherit;
+}
+
+/* 19. Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 20. Mobile Optimization */
 @media screen and (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+  
   .post-title {
-    font-size: 1.8rem !important;
+    font-size: 1.6rem !important;
   }
   
   .profile .profile_inner h1 {
@@ -145,6 +303,10 @@ blockquote {
   }
   
   .post-content p {
-    font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  pre {
+    padding: 0.8em;
   }
 }
