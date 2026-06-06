@@ -1,6 +1,6 @@
 /* ==========================================
-   Minimal Modern Style
-   Clean, whitespace-focused, elegant
+   Pure Minimal - 纯黑极简
+   No color, just black, white, and gray
    ========================================== */
 
 /* 1. CSS Variables */
@@ -8,17 +8,18 @@
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   
-  --color-text: #1a1a1a;
-  --color-text-secondary: #555;
-  --color-text-muted: #888;
+  --color-black: #000000;
+  --color-dark: #1a1a1a;
+  --color-gray-dark: #333333;
+  --color-gray: #666666;
+  --color-gray-light: #999999;
+  --color-gray-lighter: #cccccc;
+  --color-border: #e5e5e5;
   --color-bg: #ffffff;
-  --color-bg-secondary: #f8f9fa;
-  --color-border: #eaeaea;
-  --color-accent: #0066cc;
-  --color-accent-hover: #0052a3;
+  --color-bg-secondary: #f5f5f5;
 }
 
-/* 2. Global Reset & Base */
+/* 2. Global */
 * {
   margin: 0;
   padding: 0;
@@ -29,49 +30,51 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.7;
-  color: var(--color-text);
+  color: var(--color-dark);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 3. Typography Scale */
+/* 3. Typography - clean hierarchy */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-body);
   font-weight: 600;
   line-height: 1.3;
-  color: var(--color-text);
+  color: var(--color-black);
   margin-bottom: 0.8em;
 }
 
-h1 { font-size: 2rem; }
+h1 { font-size: 1.875rem; font-weight: 700; }
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.25rem; }
 h4 { font-size: 1.1rem; }
 
-/* Post title - elegant but not oversized */
+/* Post title */
 .post-title {
-  font-size: 2rem !important;
+  font-size: 1.875rem !important;
   font-weight: 700 !important;
-  line-height: 1.25 !important;
-  margin-bottom: 0.5em !important;
+  line-height: 1.3 !important;
+  color: var(--color-black) !important;
+  margin-bottom: 0.4em !important;
   letter-spacing: -0.02em;
 }
 
-/* Profile page title */
+/* Profile title */
 .profile .profile_inner h1 {
-  font-size: 2.5rem !important;
+  font-size: 2.25rem !important;
   font-weight: 700 !important;
+  color: var(--color-black) !important;
   letter-spacing: -0.03em !important;
 }
 
-/* 4. Body Text */
+/* 4. Body text */
 .post-content p,
 .post-content li,
 .post-content td {
   font-size: 1rem;
   line-height: 1.8;
-  color: var(--color-text);
+  color: var(--color-dark);
   margin-bottom: 1.2em;
 }
 
@@ -79,40 +82,46 @@ h4 { font-size: 1.1rem; }
   margin-bottom: 0;
 }
 
-/* 5. Links - subtle and elegant */
+/* 5. Links - black with underline */
 a {
-  color: var(--color-accent);
-  text-decoration: none;
+  color: var(--color-dark);
+  text-decoration: underline;
+  text-decoration-color: var(--color-gray-lighter);
+  text-underline-offset: 0.2em;
   transition: all 0.2s ease;
 }
 
 a:hover {
-  color: var(--color-accent-hover);
-  text-decoration: underline;
+  color: var(--color-black);
+  text-decoration-color: var(--color-black);
 }
 
-/* Post content links */
-.post-content a {
-  border-bottom: 1px solid transparent;
-}
-
-.post-content a:hover {
-  border-bottom-color: var(--color-accent);
+/* Navigation links - no underline by default */
+.nav a,
+.post-meta a,
+.pagination a,
+.post-tags a {
   text-decoration: none;
 }
 
-/* 6. Code Blocks */
+.nav a:hover,
+.post-meta a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-black);
+}
+
+/* 6. Code */
 code {
   font-family: var(--font-mono);
   font-size: 0.875em;
   background: var(--color-bg-secondary);
   padding: 0.2em 0.4em;
   border-radius: 4px;
-  color: #e83e8c;
+  color: var(--color-gray-dark);
 }
 
 pre {
-  background: #f4f4f4;
+  background: var(--color-bg-secondary);
   padding: 1.2em;
   border-radius: 8px;
   overflow-x: auto;
@@ -126,13 +135,12 @@ pre code {
   font-size: 0.875rem;
 }
 
-/* 7. Blockquotes - clean and minimal */
+/* 7. Blockquotes */
 blockquote {
-  border-left: 3px solid var(--color-border);
+  border-left: 2px solid var(--color-border);
   padding-left: 1.2em;
   margin: 1.5em 0;
-  color: var(--color-text-secondary);
-  font-style: italic;
+  color: var(--color-gray);
 }
 
 blockquote p {
@@ -158,7 +166,7 @@ blockquote p:last-child {
 .post-content img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 4px;
   margin: 1.5em 0;
 }
 
@@ -185,30 +193,22 @@ th, td {
 
 th {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-black);
   background: var(--color-bg-secondary);
 }
 
 /* 12. Post Meta */
 .post-meta {
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--color-gray-light);
   margin-bottom: 1.5em;
 }
 
-.post-meta a {
-  color: var(--color-text-muted);
-}
-
-.post-meta a:hover {
-  color: var(--color-accent);
-}
-
-/* 13. Tags */
+/* 13. Tags - pill style */
 .post-tags a {
   display: inline-block;
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--color-gray);
   background: var(--color-bg-secondary);
   padding: 0.3em 0.8em;
   border-radius: 20px;
@@ -218,21 +218,19 @@ th {
 }
 
 .post-tags a:hover {
-  background: var(--color-accent);
+  background: var(--color-black);
   color: white;
-  text-decoration: none;
 }
 
 /* 14. Navigation */
 .nav a {
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-gray);
   transition: color 0.2s ease;
 }
 
 .nav a:hover {
-  color: var(--color-text);
-  text-decoration: none;
+  color: var(--color-black);
 }
 
 /* 15. Pagination */
@@ -240,14 +238,13 @@ th {
   padding: 0.6em 1.2em;
   border: 1px solid var(--color-border);
   border-radius: 6px;
-  color: var(--color-text-secondary);
+  color: var(--color-gray);
   transition: all 0.2s ease;
 }
 
 .pagination a:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  text-decoration: none;
+  border-color: var(--color-black);
+  color: var(--color-black);
 }
 
 /* 16. Footer */
@@ -256,12 +253,12 @@ th {
   padding-top: 2em;
   margin-top: 3em;
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--color-gray-light);
 }
 
-/* 17. Scrollbar - minimal */
+/* 17. Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -269,18 +266,18 @@ th {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
+  background: var(--color-gray-lighter);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+  background: var(--color-gray-light);
 }
 
 /* 18. Selection */
 ::selection {
-  background: rgba(0, 102, 204, 0.15);
-  color: inherit;
+  background: var(--color-dark);
+  color: white;
 }
 
 /* 19. Smooth Scroll */
@@ -288,18 +285,18 @@ html {
   scroll-behavior: smooth;
 }
 
-/* 20. Mobile Optimization */
+/* 20. Mobile */
 @media screen and (max-width: 768px) {
   body {
     font-size: 15px;
   }
   
   .post-title {
-    font-size: 1.6rem !important;
+    font-size: 1.5rem !important;
   }
   
   .profile .profile_inner h1 {
-    font-size: 2rem !important;
+    font-size: 1.875rem !important;
   }
   
   .post-content p {
