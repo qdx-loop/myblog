@@ -23,11 +23,12 @@ theme = 'PaperMod'
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   comments = true
+  dateFormat = "2006年1月2日"
   
   # 首页信息配置
   [params.homeInfoParams]
-    Title = "Hi there你好呀 👋"
-    Content = "欢迎来到qdx的博客"
+    Title = "你好呀 👋"
+    Content = "欢迎来到 qdx 的博客"
   
 
   

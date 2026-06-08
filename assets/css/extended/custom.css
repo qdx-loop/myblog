@@ -1,71 +1,50 @@
 /* ==========================================
-   Pure Minimal - 纯黑极简
-   No color, just black, white, and gray
+   Refined Minimal - 精致极简
+   Black + White + Gray with depth
    ========================================== */
 
 /* 1. CSS Variables */
 :root {
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "Microsoft YaHei", sans-serif;
   --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   
-  --color-black: #000000;
-  --color-dark: #1a1a1a;
-  --color-gray-dark: #333333;
-  --color-gray: #666666;
-  --color-gray-light: #999999;
-  --color-gray-lighter: #cccccc;
-  --color-border: #e5e5e5;
+  --color-black: #111111;
+  --color-dark: #222222;
+  --color-text: #333333;
+  --color-secondary: #666666;
+  --color-muted: #999999;
+  --color-border: #e0e0e0;
   --color-bg: #ffffff;
-  --color-bg-secondary: #f5f5f5;
+  --color-bg-card: #fafafa;
+  --color-bg-hover: #f5f5f5;
 }
 
 /* 2. Global */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.7;
-  color: var(--color-dark);
+  color: var(--color-text);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 3. Typography - clean hierarchy */
+/* 3. Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-body);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--color-black);
-  margin-bottom: 0.8em;
 }
-
-h1 { font-size: 1.875rem; font-weight: 700; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.25rem; }
-h4 { font-size: 1.1rem; }
 
 /* Post title */
 .post-title {
-  font-size: 1.875rem !important;
+  font-size: 1.75rem !important;
   font-weight: 700 !important;
   line-height: 1.3 !important;
   color: var(--color-black) !important;
-  margin-bottom: 0.4em !important;
-  letter-spacing: -0.02em;
-}
-
-/* Profile title */
-.profile .profile_inner h1 {
-  font-size: 2.25rem !important;
-  font-weight: 700 !important;
-  color: var(--color-black) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing: -0.01em;
 }
 
 /* 4. Body text */
@@ -74,7 +53,7 @@ h4 { font-size: 1.1rem; }
 .post-content td {
   font-size: 1rem;
   line-height: 1.8;
-  color: var(--color-dark);
+  color: var(--color-text);
   margin-bottom: 1.2em;
 }
 
@@ -82,46 +61,113 @@ h4 { font-size: 1.1rem; }
   margin-bottom: 0;
 }
 
-/* 5. Links - black with underline */
+/* 5. Links */
 a {
-  color: var(--color-dark);
-  text-decoration: underline;
-  text-decoration-color: var(--color-gray-lighter);
-  text-underline-offset: 0.2em;
-  transition: all 0.2s ease;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
 
 a:hover {
   color: var(--color-black);
-  text-decoration-color: var(--color-black);
 }
 
-/* Navigation links - no underline by default */
-.nav a,
+/* Navigation links */
+.nav a {
+  font-weight: 500;
+  color: var(--color-secondary);
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--color-black);
+}
+
+/* Blog title - remove underline */
+.nav .brand a,
+.nav a[rel="home"],
+header nav a:first-child {
+  text-decoration: none !important;
+}
+
+/* Post content links - underline on hover */
+.post-content a {
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+}
+
+.post-content a:hover {
+  text-decoration-color: var(--color-text);
+}
+
+/* Post meta links */
 .post-meta a,
 .pagination a,
 .post-tags a {
   text-decoration: none;
 }
 
-.nav a:hover,
-.post-meta a:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--color-black);
+/* 6. Profile / Hero Section - reduce whitespace */
+.profile {
+  padding: 2rem 0 !important;
 }
 
-/* 6. Code */
+.profile .profile_inner {
+  max-width: 560px;
+}
+
+.profile .profile_inner h1 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: var(--color-black) !important;
+  margin-bottom: 0.3em !important;
+}
+
+.profile .profile_inner p {
+  color: var(--color-secondary);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* 7. Post Cards - add depth */
+.archives .archives-group-item,
+.post-entry {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.archives .archives-group-item:hover,
+.post-entry:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+/* Card inner padding */
+.archives .archives-group-item .archive-entry,
+.post-entry .entry-header {
+  padding: 1rem 1.25rem;
+}
+
+/* 8. Code */
 code {
   font-family: var(--font-mono);
   font-size: 0.875em;
-  background: var(--color-bg-secondary);
-  padding: 0.2em 0.4em;
+  background: var(--color-bg-hover);
+  padding: 0.15em 0.35em;
   border-radius: 4px;
-  color: var(--color-gray-dark);
+  color: var(--color-text);
 }
 
 pre {
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   padding: 1.2em;
   border-radius: 8px;
   overflow-x: auto;
@@ -135,12 +181,12 @@ pre code {
   font-size: 0.875rem;
 }
 
-/* 7. Blockquotes */
+/* 9. Blockquotes */
 blockquote {
-  border-left: 2px solid var(--color-border);
-  padding-left: 1.2em;
+  border-left: 3px solid var(--color-border);
+  padding-left: 1em;
   margin: 1.5em 0;
-  color: var(--color-gray);
+  color: var(--color-secondary);
 }
 
 blockquote p {
@@ -151,33 +197,33 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
-/* 8. Lists */
+/* 10. Lists */
 .post-content ul,
 .post-content ol {
   margin: 1.2em 0;
-  padding-left: 1.8em;
+  padding-left: 1.5em;
 }
 
 .post-content li {
-  margin-bottom: 0.4em;
+  margin-bottom: 0.3em;
 }
 
-/* 9. Images */
+/* 11. Images */
 .post-content img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: 6px;
   margin: 1.5em 0;
 }
 
-/* 10. Horizontal Rule */
+/* 12. Horizontal Rule */
 hr {
   border: none;
   border-top: 1px solid var(--color-border);
   margin: 2em 0;
 }
 
-/* 11. Tables */
+/* 13. Tables */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -194,69 +240,94 @@ th, td {
 th {
   font-weight: 600;
   color: var(--color-black);
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-card);
 }
 
-/* 12. Post Meta */
+/* 14. Post Meta */
 .post-meta {
-  font-size: 0.875rem;
-  color: var(--color-gray-light);
+  font-size: 0.85rem;
+  color: var(--color-muted);
   margin-bottom: 1.5em;
 }
 
-/* 13. Tags - pill style */
+.post-meta a {
+  color: var(--color-muted);
+}
+
+.post-meta a:hover {
+  color: var(--color-text);
+}
+
+/* 15. Tags */
 .post-tags a {
   display: inline-block;
   font-size: 0.8rem;
-  color: var(--color-gray);
-  background: var(--color-bg-secondary);
-  padding: 0.3em 0.8em;
+  color: var(--color-secondary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: 0.25em 0.7em;
   border-radius: 20px;
-  margin-right: 0.5em;
-  margin-bottom: 0.5em;
-  transition: all 0.2s ease;
+  margin-right: 0.4em;
+  margin-bottom: 0.4em;
+  transition: all 0.15s ease;
 }
 
 .post-tags a:hover {
   background: var(--color-black);
   color: white;
-}
-
-/* 14. Navigation */
-.nav a {
-  font-weight: 500;
-  color: var(--color-gray);
-  transition: color 0.2s ease;
-}
-
-.nav a:hover {
-  color: var(--color-black);
-}
-
-/* 15. Pagination */
-.pagination a {
-  padding: 0.6em 1.2em;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  color: var(--color-gray);
-  transition: all 0.2s ease;
-}
-
-.pagination a:hover {
   border-color: var(--color-black);
-  color: var(--color-black);
 }
 
-/* 16. Footer */
+/* 16. Breadcrumb */
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 1.5em;
+}
+
+.breadcrumb a {
+  color: var(--color-muted);
+}
+
+.breadcrumb a:hover {
+  color: var(--color-text);
+}
+
+/* 17. Post Navigation */
+.post-nav {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-card);
+  padding: 1rem 1.25rem;
+  margin-top: 2em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.post-nav a {
+  text-decoration: none;
+}
+
+.post-nav a:hover {
+  text-decoration: underline;
+}
+
+/* 18. Comment Section Divider */
+#waline-comment {
+  margin-top: 3em;
+  padding-top: 2em;
+  border-top: 1px solid var(--color-border);
+}
+
+/* 19. Footer */
 .footer {
   border-top: 1px solid var(--color-border);
   padding-top: 2em;
   margin-top: 3em;
-  font-size: 0.875rem;
-  color: var(--color-gray-light);
+  font-size: 0.85rem;
+  color: var(--color-muted);
 }
 
-/* 17. Scrollbar */
+/* 20. Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -266,37 +337,41 @@ th {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gray-lighter);
+  background: var(--color-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-light);
+  background: var(--color-muted);
 }
 
-/* 18. Selection */
+/* 21. Selection */
 ::selection {
-  background: var(--color-dark);
+  background: var(--color-text);
   color: white;
 }
 
-/* 19. Smooth Scroll */
+/* 22. Smooth Scroll */
 html {
   scroll-behavior: smooth;
 }
 
-/* 20. Mobile */
+/* 23. Mobile */
 @media screen and (max-width: 768px) {
   body {
     font-size: 15px;
   }
   
-  .post-title {
-    font-size: 1.5rem !important;
+  .profile {
+    padding: 1.5rem 0 !important;
   }
   
   .profile .profile_inner h1 {
-    font-size: 1.875rem !important;
+    font-size: 1.6rem !important;
+  }
+  
+  .post-title {
+    font-size: 1.4rem !important;
   }
   
   .post-content p {
