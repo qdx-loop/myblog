@@ -1,6 +1,6 @@
 ---
 title: 'Fable 5：Anthropic 最强模型发布即被封'
-date: '2026-06-20T22:00:00+08:00'
+date: '2026-06-20T18:00:00+08:00'
 draft: false
 author: "qdx"
 tags: ["AI", "Anthropic", "Claude"]
