@@ -25,6 +25,7 @@ theme = 'PaperMod'
   comments = true
   defaultTheme = 'dark'
   dateFormat = "2006年1月2日"
+  mainSections = ["posts"]
 
   # 首页信息配置
   [params.homeInfoParams]
