@@ -24,21 +24,22 @@ theme = 'PaperMod'
   ShowBreadCrumbs = true
   comments = true
   defaultTheme = 'dark'
+  dateFormat = "2006年1月2日"
 
   # 首页信息配置
   [params.homeInfoParams]
     Title = "LS"
     Content = "记录技术思考，分享生活感悟"
-  
 
-  
+
+
   # 搜索功能配置
   enableSearch = true
-  
+
   [params.search]
     enable = true
     limit = 20
-    
+
     # 修复：改为标准TOML表格式，避免多行内联表语法错误
     [params.search.fuseOpts]
       keys = ["title", "content", "summary", "tags", "categories"]
@@ -95,6 +96,3 @@ theme = 'PaperMod'
   name = "搜索"
   url = "/search/"
   weight = 10
-
-
-

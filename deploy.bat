@@ -65,6 +65,24 @@ echo.
 
 :: Check remote status
 echo [ACTION] Checking remote status...
+<<<<<<< HEAD
+=======
+git fetch https://github.com/qdx-loop/myblog.git master > fetch_output.txt 2>&1
+if errorlevel 1 (
+    echo [WARN] HTTPS fetch failed, trying SSH...
+    git fetch git@github.com:qdx-loop/myblog.git master > fetch_output.txt 2>&1
+    if errorlevel 1 (
+        echo [ERROR] Failed to fetch remote
+        type fetch_output.txt
+        echo [ERROR] Error copied to clipboard
+        type fetch_output.txt | clip
+        del fetch_output.txt 2>nul
+        pause
+        exit /b 1
+    )
+)
+del fetch_output.txt 2>nul
+>>>>>>> aa5f52ae969af9175c70cdc8570d9f95f69ce99c
 
 :: Try HTTPS fetch first
 git fetch https://github.com/qdx-loop/myblog.git master > fetch_output.txt 2>&1
