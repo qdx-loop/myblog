@@ -65,19 +65,35 @@ echo.
 
 :: Check remote status
 echo [ACTION] Checking remote status...
-git fetch origin master > fetch_output.txt 2>&1
-if errorlevel 1 (
-    echo [ERROR] Failed to fetch remote
-    type fetch_output.txt
-    echo [ERROR] Error copied to clipboard
-    type fetch_output.txt | clip
-    del fetch_output.txt 2>nul
-    pause
-    exit /b 1
-)
-del fetch_output.txt 2>nul
 
-git rev-list --left-right --count HEAD...origin/master > temp_check.txt 2>&1
+:: Try HTTPS fetch first
+git fetch https://github.com/qdx-loop/myblog.git master > fetch_output.txt 2>&1
+if not errorlevel 1 (
+    del fetch_output.txt 2>nul
+    echo [OK] Fetched via HTTPS
+    goto CHECK_STATUS
+)
+
+:: HTTPS failed, try SSH
+git fetch git@github.com:qdx-loop/myblog.git master > fetch_output.txt 2>&1
+if not errorlevel 1 (
+    del fetch_output.txt 2>nul
+    echo [OK] Fetched via SSH
+    goto CHECK_STATUS
+)
+
+:: Both failed
+echo [ERROR] Failed to fetch remote
+type fetch_output.txt
+echo [ERROR] Error copied to clipboard
+type fetch_output.txt | clip
+del fetch_output.txt 2>nul
+pause
+exit /b 1
+
+:CHECK_STATUS
+
+git rev-list --left-right --count HEAD...FETCH_HEAD > temp_check.txt 2>&1
 if errorlevel 1 (
     echo [INFO] Cannot compare, trying push directly...
     goto PUSH
