@@ -1,9 +1,9 @@
 # ==========================================
 # 基础配置
 # ==========================================
-baseURL = 'https://qdx.dpdns.org/'  # 替换为你的实际域名
+baseURL = 'https://qdx.dpdns.org/'
 locale = 'zh-CN'
-title = 'qdx的博客'
+title = 'LS - Blog'
 theme = 'PaperMod'
 
 # ==========================================
@@ -17,17 +17,18 @@ theme = 'PaperMod'
 # ==========================================
 [params]
   # 原有的基础配置
-  author = 'qdx'
+  author = 'LS'
   ShowReadingTime = true
   ShowShareButtons = false
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   comments = true
-  
+  defaultTheme = 'dark'
+
   # 首页信息配置
   [params.homeInfoParams]
-    Title = "Hi there你好呀 👋"
-    Content = "欢迎来到qdx的博客"
+    Title = "LS"
+    Content = "记录技术思考，分享生活感悟"
   
 
   
@@ -68,8 +69,8 @@ theme = 'PaperMod'
 [[menu.main]]
   identifier = "home"
   name = "首页"
-  url = "/"          # 指向根目录，也就是首页
-  weight = 1         # 权重设为1，排在最左边
+  url = "/"
+  weight = 1
 
 [[menu.main]]
   identifier = "tags"
@@ -78,10 +79,10 @@ theme = 'PaperMod'
   weight = 5
 
 [[menu.main]]
-  identifier = "categories"  
-  name = "分类"              
-  url = "/categories/"    
-  weight = 4               
+  identifier = "categories"
+  name = "分类"
+  url = "/categories/"
+  weight = 4
 
 [[menu.main]]
   identifier = "archives"
