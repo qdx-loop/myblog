@@ -30,7 +30,7 @@ theme = 'PaperMod'
   # 首页信息配置
   [params.homeInfoParams]
     Title = "LS"
-    Content = ""
+    Content = "欢迎来到qdx的blog"
 
 
 

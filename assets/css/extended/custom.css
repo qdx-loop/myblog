@@ -132,6 +132,39 @@ h4 { font-size: 1.1rem; }
   text-align: center !important;
 }
 
+/* 首页 homeInfoParams 标题 (LS) */
+.home-info .entry-header h1 {
+  font-family: var(--font-display) !important;
+  font-size: 5.5rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+  text-align: center !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* 首页 homeInfoParams 内容区（副标题） */
+.home-info .entry-content {
+  text-align: center !important;
+  margin-top: 0.5rem !important;
+}
+
+.home-info .entry-content p {
+  color: var(--text-secondary) !important;
+  font-size: 1.05rem !important;
+  margin: 0 !important;
+}
+
+/* 首页 homeInfoParams 整体居中 */
+.home-info {
+  text-align: center !important;
+}
+
+/* 首页 homeInfoParams 社交图标居中 */
+.home-info .entry-footer {
+  justify-content: center !important;
+}
+
 /* ===== 5. 正文内容 ===== */
 .post-content p,
 .post-content li,
@@ -280,7 +313,7 @@ tr:hover td {
 
 /* 置顶/首篇文章 */
 .first-entry {
-  margin: calc(var(--gap) * 1.5) 0 calc(var(--gap) * 2.5) 0 !important;
+  margin: calc(var(--gap) * 1.5) 0 calc(var(--gap) * 1) 0 !important;
 }
 
 /* ===== 12. 标签 ===== */
