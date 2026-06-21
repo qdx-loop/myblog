@@ -5,22 +5,50 @@
 
 /* ===== 1. 主题变量 ===== */
 :root {
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Fira Code', 'SF Mono', Monaco, monospace;
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+}
+
+/* 亮色模式变量 */
+:root {
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-code: #f3f3f3;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #888888;
+  --border: #e4e4e4;
+}
+
+/* PaperMod 主题变量覆盖 - 亮色模式 */
+:root {
+  --theme: #fafafa !important;
+  --entry: #ffffff !important;
+  --primary: #1a1a1a !important;
+  --secondary: #4a4a4a !important;
+  --tertiary: #e4e4e4 !important;
+  --content: #4a4a4a !important;
+  --hljs-bg: #f3f3f3 !important;
+  --code-bg: #f3f3f3 !important;
+  --border: #e4e4e4 !important;
+}
+
+/* 暗色模式变量 */
+:root[data-theme="dark"] {
   --bg-primary: #0f0f0f;
   --bg-secondary: #1a1a1a;
   --bg-code: #161616;
   --text-primary: #e5e5e5;
   --text-secondary: #a0a0a0;
   --text-muted: #666666;
-  --accent: #f59e0b;
-  --accent-hover: #d97706;
   --border: #2a2a2a;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Fira Code', 'SF Mono', Monaco, monospace;
 }
 
-/* PaperMod 主题变量覆盖 */
-:root {
+/* PaperMod 主题变量覆盖 - 暗色模式 */
+:root[data-theme="dark"] {
   --theme: #0f0f0f !important;
   --entry: #1a1a1a !important;
   --primary: #e5e5e5 !important;
@@ -364,6 +392,11 @@ tr:hover td {
   border-bottom: 1px solid var(--border) !important;
 }
 
+/* 亮色模式导航栏 */
+:root:not([data-theme="dark"]) .header-nav {
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
 .logo a {
   font-family: var(--font-display) !important;
   font-weight: 700 !important;
@@ -373,12 +406,12 @@ tr:hover td {
 
 .menu .active a {
   font-weight: 600 !important;
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
 }
 
 /* 导航菜单项 */
 .menu a {
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
 }
 
 .menu a:hover {
