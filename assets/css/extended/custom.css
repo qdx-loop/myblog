@@ -373,6 +373,15 @@ tr:hover td {
 
 .menu .active a {
   font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+/* 导航菜单项 */
+.menu a {
+  color: #ffffff !important;
+}
+
+.menu a:hover {
   color: var(--accent) !important;
 }
 
