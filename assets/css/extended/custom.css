@@ -104,13 +104,13 @@ body {
 
 /* ===== 3. 链接 ===== */
 a {
-  color: var(--accent);
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--accent-hover);
+  color: var(--text-primary);
   text-decoration: underline;
 }
 
@@ -223,7 +223,7 @@ h4 { font-size: 1.1rem; }
 }
 
 .post-content li::marker {
-  color: var(--accent);
+  color: var(--text-primary);
 }
 
 /* ===== 6. 代码 ===== */
@@ -235,7 +235,7 @@ dd code {
   padding: 0.2em 0.4em;
   border-radius: 4px;
   background: var(--bg-code);
-  color: var(--accent);
+  color: var(--text-primary);
 }
 
 pre {
@@ -381,7 +381,7 @@ tr:hover td {
 
 .pagination a:hover {
   border-color: var(--accent) !important;
-  color: var(--accent) !important;
+  color: var(--text-primary) !important;
 }
 
 /* ===== 14. 导航栏 ===== */
@@ -415,7 +415,7 @@ tr:hover td {
 }
 
 .menu a:hover {
-  color: var(--accent) !important;
+  color: var(--text-primary) !important;
 }
 
 /* ===== 15. 面包屑导航 ===== */
@@ -451,7 +451,12 @@ tr:hover td {
   text-transform: none !important;
   letter-spacing: normal !important;
   font-size: 0.8rem !important;
-  color: var(--text-muted) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 亮色模式下分页导航标签文字为纯黑，确保颜色统一 */
+:root:not([data-theme="dark"]) .paginav .title {
+  color: #000000 !important;
 }
 
 /* ===== 18. 页脚 ===== */
@@ -464,7 +469,7 @@ tr:hover td {
 }
 
 .footer a {
-  color: var(--accent);
+  color: var(--text-secondary);
 }
 
 /* ===== 19. 回到顶部 ===== */
@@ -563,18 +568,18 @@ button, .button {
 }
 
 .social-icons a:hover {
-  color: var(--accent) !important;
+  color: var(--text-primary) !important;
 }
 
 /* 文章内链接 */
 .post-content a {
-  color: var(--accent);
-  text-decoration: none;
+  color: var(--text-primary);
+  text-decoration: underline;
 }
 
 .post-content a:hover {
+  color: var(--text-primary);
   text-decoration: underline;
-  color: var(--accent-hover);
 }
 
 /* 强调文字 */

@@ -1,11 +1,15 @@
 ---
-title: 'Fable 5：Anthropic 最强模型发布即被封'
-date: '2026-06-20T18:00:00+08:00'
+title: Fable 5：Anthropic 最强模型发布即被封
+date: 2026-06-20T18:00:00+08:00
 draft: false
-author: "qdx"
-tags: ["AI", "Anthropic", "Claude"]
-categories: ["技术观察"]
-description: "Anthropic 发布 Claude Fable 5，三天后被美国政府出口管制，AI 模型正式进入国家安全监管框架"
+author: qdx
+tags:
+  - AI
+  - Anthropic
+  - Claude
+categories:
+  - 技术观察
+description: Anthropic 发布 Claude Fable 5，三天后被美国政府出口管制，AI 模型正式进入国家安全监管框架
 ---
 
 2026 年 6 月 9 日，Anthropic 发布了 Claude Fable 5。三天后，它被美国政府按下了暂停键。
