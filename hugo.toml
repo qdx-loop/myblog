@@ -1,7 +1,7 @@
 # ==========================================
 # 基础配置
 # ==========================================
-baseURL = 'https://qdx.dpdns.org/'
+baseURL = 'https://lsx.cc.cd/'
 locale = 'zh-CN'
 title = 'LS - Blog'
 theme = 'PaperMod'
