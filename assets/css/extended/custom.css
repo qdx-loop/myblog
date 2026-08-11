@@ -12,8 +12,10 @@
   --accent-hover: #d97706;
 }
 
-/* 亮色模式变量 */
-:root {
+/* 亮色模式变量（显式限定，避免暗色模式下也被应用） */
+:root,
+:root[data-theme="light"],
+:root[data-theme="auto"] {
   --bg-primary: #fafafa;
   --bg-secondary: #ffffff;
   --bg-code: #f3f3f3;
@@ -24,7 +26,9 @@
 }
 
 /* PaperMod 主题变量覆盖 - 亮色模式 */
-:root {
+:root,
+:root[data-theme="light"],
+:root[data-theme="auto"] {
   --theme: #fafafa !important;
   --entry: #ffffff !important;
   --primary: #1a1a1a !important;

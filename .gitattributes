@@ -1,0 +1,5 @@
+# 统一行尾策略（Windows/Linux 双端协作）
+* text=auto
+*.sh text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
