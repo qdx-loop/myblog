@@ -2,6 +2,7 @@
 title: '庆祝'
 date: '2026-05-30T22:01:50+08:00'
 draft: false
+weight: 1
 author: "qdx"
 tags: ["其它"]
 categories: ["其它"]
