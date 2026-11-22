@@ -601,54 +601,118 @@ button, .button {
    全站通告横幅（data/notice.toml 驱动）
    ========================================== */
 .site-notice {
+  --nt-accent: var(--accent);
+  --nt-accent-soft: rgba(245, 158, 11, 0.14);
+  --nt-accent-line: rgba(245, 158, 11, 0.38);
+  position: relative;
   border-bottom: 1px solid var(--border);
-  background: var(--bg-secondary);
+  background: linear-gradient(180deg, var(--nt-accent-soft), transparent 130%), var(--bg-secondary);
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  overflow: hidden;
+}
+.site-notice::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--nt-accent), transparent);
+}
+.site-notice-warn {
+  --nt-accent: #f97316;
+  --nt-accent-soft: rgba(249, 115, 22, 0.13);
+  --nt-accent-line: rgba(249, 115, 22, 0.4);
+}
+.site-notice-danger {
+  --nt-accent: #ef4444;
+  --nt-accent-soft: rgba(239, 68, 68, 0.13);
+  --nt-accent-line: rgba(239, 68, 68, 0.4);
 }
 .site-notice-inner {
   max-width: var(--main-width, 720px);
   margin: 0 auto;
-  padding: 0.7rem 2.5rem 0.7rem 1.25rem;
+  padding: 0.65rem 2.75rem 0.65rem 1.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  position: relative;
+}
+.site-notice-icon {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  display: grid;
+  place-items: center;
+  color: var(--nt-accent);
+  background: var(--nt-accent-soft);
+  border: 1px solid var(--nt-accent-line);
+  border-radius: 50%;
+  padding: 0.18rem;
+}
+.site-notice-icon svg { width: 100%; height: 100%; }
+.site-notice-body {
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.5rem 0.75rem;
-  position: relative;
-  border-left: 3px solid var(--accent);
+  gap: 0.15rem 0.6rem;
 }
-.site-notice-info .site-notice-inner { border-left-color: var(--accent); }
-.site-notice-warn .site-notice-inner { border-left-color: #f97316; }
-.site-notice-danger .site-notice-inner { border-left-color: #ef4444; }
-.site-notice-title { color: var(--text-primary); white-space: nowrap; }
-.site-notice-text { flex: 1 1 22rem; color: var(--text-secondary); }
+.site-notice-title {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.site-notice-text { color: var(--text-secondary); }
 .site-notice-text > :first-child { margin-top: 0; }
 .site-notice-text > :last-child { margin-bottom: 0; }
 .site-notice-text p { display: inline; margin: 0; }
-.site-notice-link {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid currentColor;
-  white-space: nowrap;
+.site-notice-text code {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 0.3em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
 }
-.site-notice-link:hover { color: var(--accent-hover); }
+.site-notice-link {
+  flex: 0 0 auto;
+  color: var(--nt-accent);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--nt-accent-line);
+  border-radius: 999px;
+  background: var(--nt-accent-soft);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.site-notice-link:hover { color: var(--accent-hover); background: var(--nt-accent-line); }
 .site-notice-close {
   position: absolute;
   top: 50%;
-  right: 0.5rem;
+  right: 0.6rem;
   transform: translateY(-50%);
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
   background: none;
   border: 0;
+  border-radius: 50%;
   color: var(--text-muted);
-  font-size: 1.25rem;
-  line-height: 1;
-  padding: 0.25rem 0.5rem;
   cursor: pointer;
-  border-radius: 4px;
+  transition: background 0.15s ease, color 0.15s ease;
 }
+.site-notice-close svg { width: 0.8rem; height: 0.8rem; }
 .site-notice-close:hover { color: var(--text-primary); background: var(--border); }
 @media (max-width: 640px) {
-  .site-notice-inner { padding-right: 2.25rem; }
-  .site-notice-text { flex-basis: 100%; }
+  .site-notice-inner { padding-right: 2.4rem; gap: 0.55rem; }
+  .site-notice-body { flex-basis: calc(100% - 2rem); }
+  .site-notice-link { margin-left: 2.05rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-notice, .site-notice-link, .site-notice-close { transition: none !important; }
 }
