@@ -71,26 +71,34 @@ askpass.sh    # 仅当配置了 github_token 时生成，供 HTTPS 推送鉴权
 ## 发布与传输链
 
 发布 job 顺序：`git status` → （可选）`pull --rebase` → 构建校验 → 暂存 → `commit` → 推送。
-推送按以下传输链逐条回退，任一成功即停：
 
-1. **HTTPS** `https://github.com/qdx-loop/myblog.git` —— 匿名读可用；推送需凭据。配置 `github_token`（GitHub PAT）后通过 `GIT_ASKPASS` 生效，无需改代码。
-2. **SSH:22** `git@github.com:qdx-loop/myblog.git`
-3. **SSH:443** `ssh://git@ssh.github.com:443/...`（22 端口被网络阻断时的后路）
+推送默认走 **SSH**，且**不会弹出任何凭据输入框**：
 
-> 传输可用性随网络环境变化：实测同一台机器在不同时间 22 端口时通时断，故保留三条回退链。
-> 「演练模式」用 `git push --dry-run`，走同一鉴权路径但不改远端。
-> 推送成功后由 **Cloudflare Pages** 自动构建部署，通常 1–2 分钟，站点 `https://lssx.de5.net/`。
+1. **SSH:443** `ssh://git@ssh.github.com:443/...` —— 默认首选（22 端口常被网络阻断）
+2. **SSH:22** `git@github.com:...` —— 443 失败时的回退
+3. **HTTPS** —— 只在配置了 `github_token`（PAT）时才尝试
 
-配置 token：
+> **GitHub 账户密码不能用于 Git 推送**：GitHub 自 2021 年起只接受 PAT。
+> 没有 token 时 HTTPS 尝试必然失败，还可能触发用户名/密码弹框，所以默认完全跳过。
+
+仓库已配置 `url.<ssh443>.insteadOf`，把 `https://github.com/qdx-loop/myblog.git`
+与 `git@github.com:qdx-loop/myblog.git` 都重写到 443：手工 `git push`、
+`git push origin`、`deploy.sh`、IDE 推送都不会再问账号密码。
 
 ```sh
-python3 - <<'PY'
-import json, pathlib
-p = pathlib.Path.home()/".config/myblog-console/config.json"
-c = json.loads(p.read_text()); c["github_token"] = "ghp_xxx"
-p.write_text(json.dumps(c, ensure_ascii=False, indent=2))
-PY
+git config --local --get-all url."ssh://git@ssh.github.com:443/qdx-loop/myblog.git".insteadOf
 ```
+
+`deploy.sh` 同样跳过无凭据的 HTTPS，并 `export GIT_TERMINAL_PROMPT=0`（永不在终端等待输入）。
+
+确实需要 HTTPS（某些只支持 HTTPS 的工具）时，配置 PAT：
+
+```sh
+python3 -c "import json,pathlib;p=pathlib.Path.home()/'.config/myblog-console/config.json';c=json.loads(p.read_text());c['github_token']='ghp_xxx';p.write_text(json.dumps(c,ensure_ascii=False,indent=2))"
+```
+
+> 「演练模式」用 `git push --dry-run`，走同一鉴权路径但不改远端。
+> 推送成功后由 **Cloudflare Pages** 自动构建部署，通常 1–2 分钟，站点 `https://lssx.de5.net/`。
 
 ## 设置面板注意事项
 

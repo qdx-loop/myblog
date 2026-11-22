@@ -8,10 +8,23 @@ set -u
 cd "$(dirname "$0")" || exit 1
 
 HTTPS_URL="${BLOG_HTTPS_URL:-https://github.com/qdx-loop/myblog.git}"
-SSH_URL="${BLOG_SSH_URL:-git@github.com:qdx-loop/myblog.git}"
+# 22 端口常被网络阻断，默认走 GitHub 的 443 SSH 端口（两者都可推送）
+SSH_URL="${BLOG_SSH_URL:-ssh://git@ssh.github.com:443/qdx-loop/myblog.git}"
+SSH_CMD="ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR"
+[ "${SSH_URL#*:443}" != "$SSH_URL" ] && SSH_CMD="$SSH_CMD -p 443"
+SSH_OPTS=(-c "core.sshCommand=$SSH_CMD")
 
 # HTTPS 通道加速失败切换（20 秒低速即放弃，改走 SSH）
 GIT_HTTP_TIMEOUT=(-c http.lowSpeedLimit=1 -c http.lowSpeedTime=20)
+
+# 永不在终端等待输入：GitHub 已不支持账户密码做 Git 认证，
+# 需要 HTTPS 鉴权时用 BLOG_TOKEN=<PAT> 运行，或把 PAT 写进控制台配置。
+export GIT_TERMINAL_PROMPT=0
+
+# 是否可用 HTTPS：仅当显式提供 token（PAT）时
+has_https_auth() {
+    [ -n "${BLOG_TOKEN:-}" ] || [ -n "${GITHUB_TOKEN:-}" ]
+}
 
 pause() {
     read -rp "" _dummy
@@ -23,23 +36,36 @@ pause() {
 goto_push() {
     echo
     echo "[ACTION] Pushing to remote..."
-    echo "[ACTION] Trying HTTPS..."
-    if git push "${GIT_HTTP_TIMEOUT[@]}" "$HTTPS_URL" master > push_output.txt 2>&1; then
-        rm -f push_output.txt
-        echo "[OK] HTTPS push success"
-        goto_deploy
-        return 0
+    if has_https_auth; then
+        echo "[ACTION] Trying HTTPS (token)..."
+        if GIT_ASKPASS="${GIT_ASKPASS:-}" git "${GIT_HTTP_TIMEOUT[@]}" push "$HTTPS_URL" master > push_output.txt 2>&1; then
+            rm -f push_output.txt
+            echo "[OK] HTTPS push success"
+            goto_deploy
+            return 0
+        fi
+        echo "[INFO] HTTPS failed, trying SSH..."
+    else
+        echo "[INFO] 未配置 token，跳过 HTTPS（GitHub 不接受账户密码），直接走 SSH"
     fi
-    echo "[INFO] HTTPS failed, trying SSH..."
-    if git push "$SSH_URL" master > push_output.txt 2>&1; then
+    if git "${SSH_OPTS[@]}" push "$SSH_URL" master > push_output.txt 2>&1; then
         rm -f push_output.txt
         echo "[OK] SSH push success"
         goto_deploy
         return 0
     fi
+    if [ "$SSH_URL" != "git@github.com:qdx-loop/myblog.git" ]; then
+        echo "[INFO] SSH:443 failed, trying SSH:22..."
+        if git -c "core.sshCommand=ssh -o BatchMode=yes -o ConnectTimeout=10" push git@github.com:qdx-loop/myblog.git master > push_output.txt 2>&1; then
+            rm -f push_output.txt
+            echo "[OK] SSH push success"
+            goto_deploy
+            return 0
+        fi
+    fi
     cat push_output.txt
     rm -f push_output.txt
-    echo "[ERROR] Both HTTPS and SSH failed"
+    echo "[ERROR] Push failed"
     echo "[ERROR] Error output shown above"
     pause
     exit 1
@@ -51,15 +77,17 @@ goto_push() {
 goto_push_force() {
     echo
     echo "[ACTION] Force pushing to remote..."
-    echo "[ACTION] Trying HTTPS..."
-    if git push -f "${GIT_HTTP_TIMEOUT[@]}" "$HTTPS_URL" master > push_output.txt 2>&1; then
-        rm -f push_output.txt
-        echo "[OK] HTTPS force push success"
-        goto_deploy
-        return 0
+    if has_https_auth; then
+        echo "[ACTION] Trying HTTPS (token)..."
+        if git "${GIT_HTTP_TIMEOUT[@]}" push -f "$HTTPS_URL" master > push_output.txt 2>&1; then
+            rm -f push_output.txt
+            echo "[OK] HTTPS force push success"
+            goto_deploy
+            return 0
+        fi
+        echo "[INFO] HTTPS failed, trying SSH..."
     fi
-    echo "[INFO] HTTPS failed, trying SSH..."
-    if git push -f "$SSH_URL" master > push_output.txt 2>&1; then
+    if git "${SSH_OPTS[@]}" push -f "$SSH_URL" master > push_output.txt 2>&1; then
         rm -f push_output.txt
         echo "[OK] SSH force push success"
         goto_deploy
@@ -67,7 +95,7 @@ goto_push_force() {
     fi
     cat push_output.txt
     rm -f push_output.txt
-    echo "[ERROR] Both HTTPS and SSH failed"
+    echo "[ERROR] Force push failed"
     echo "[ERROR] Error output shown above"
     pause
     exit 1

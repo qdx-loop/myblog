@@ -97,28 +97,29 @@ def ensure_askpass(token: str) -> Path | None:
 
 
 def transports(token: str | None = None) -> list[dict]:
-    """有序传输链，每项 {"name","url","pre":[...],"env":{...}}。"""
+    """有序传输链，每项 {"name","url","pre":[...],"env":{...}}。
+
+    只在配置了 token 时才尝试 HTTPS：GitHub 早已不接受账户密码做 Git 认证，
+    无凭据的 HTTPS 尝试必然失败并可能触发凭据输入框，所以默认直接走 SSH。
+    SSH 优先 443（本机 22 时通时断），再退 22。
+    """
     ap = askpass_path() if token else None
     https_env = {}
     if token and ap and ap.exists():
         https_env = {"GIT_ASKPASS": str(ap), "MYBLOG_GIT_TOKEN": token}
 
     ssh_opts = "ssh -o BatchMode=yes -o ConnectTimeout=10"
-    return [
-        {
-            "name": "HTTPS",
-            "url": GITHUB_HTTPS,
-            "pre": ["-c", "http.lowSpeedLimit=1", "-c", "http.lowSpeedTime=20"],
-            "env": https_env,
-        },
-        {
-            "name": "SSH:22",
-            "url": GITHUB_SSH,
-            # 作为列表 argv 传给 subprocess（无 shell），git 自行按空格切分 sshCommand，
-            # 不能用 shlex.quote（会把整串包成单个命令名）。
-            "pre": ["-c", f"core.sshCommand={ssh_opts}"],
-            "env": {},
-        },
+    chain: list[dict] = []
+    if token:
+        chain.append(
+            {
+                "name": "HTTPS",
+                "url": GITHUB_HTTPS,
+                "pre": ["-c", "http.lowSpeedLimit=1", "-c", "http.lowSpeedTime=20"],
+                "env": https_env,
+            }
+        )
+    chain += [
         {
             "name": "SSH:443",
             "url": GITHUB_SSH443,
@@ -130,7 +131,16 @@ def transports(token: str | None = None) -> list[dict]:
             ],
             "env": {},
         },
+        {
+            "name": "SSH:22",
+            "url": GITHUB_SSH,
+            # 作为列表 argv 传给 subprocess（无 shell），git 自行按空格切分 sshCommand，
+            # 不能用 shlex.quote（会把整串包成单个命令名）。
+            "pre": ["-c", f"core.sshCommand={ssh_opts}"],
+            "env": {},
+        },
     ]
+    return chain
 
 
 def _push_once(
