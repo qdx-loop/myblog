@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>博客控制台</title>
 <link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/vendor/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/vendor/codemirror/addon/dialog/dialog.css">
 </head>
 <body>
 <div class="app">
@@ -180,10 +182,28 @@
             <datalist id="dl-tags"></datalist>
             <datalist id="dl-categories"></datalist>
 
-            <label class="field field-block">
-              <span class="field-label">正文 Markdown <span class="muted">（<kbd>Ctrl</kbd>+<kbd>S</kbd> 保存）</span></span>
-              <textarea id="post-body" class="textarea mono md-input" spellcheck="false" placeholder="在这里写正文…"></textarea>
-            </label>
+            <div class="field field-block">
+              <div class="field-head">
+                <span class="field-label">正文 Markdown <span class="muted">（<kbd>Ctrl</kbd>+<kbd>S</kbd> 保存，<kbd>Ctrl</kbd>+<kbd>F</kbd> 查找）</span></span>
+                <div class="md-toolbar" id="md-toolbar" role="toolbar" aria-label="Markdown 工具栏">
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="bold" title="粗体（Ctrl+B）">粗体</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="italic" title="斜体（Ctrl+I）">斜体</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="h2" title="二级标题">标题</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="code" title="行内代码">代码</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="codeblock" title="代码块">代码块</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="link" title="链接">链接</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="image" title="图片">图片</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="ul" title="无序列表">列表</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="ol" title="有序列表">有序</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="quote" title="引用">引用</button>
+                  <button class="btn btn-sm btn-ghost" type="button" data-md="hr" title="分隔线">分隔线</button>
+                </div>
+              </div>
+              <div class="md-host">
+                <textarea id="post-body" class="textarea mono md-input" spellcheck="false" placeholder="在这里写正文…"></textarea>
+              </div>
+              <div class="md-status muted" id="md-status">0 字 · 0 行</div>
+            </div>
 
             <div class="field field-block">
               <span class="field-label">预览</span>
@@ -235,12 +255,6 @@
           <textarea id="set-raw" class="textarea mono toml-input" spellcheck="false"></textarea>
           <p class="note">校验只解析 TOML，不写盘；保存会先备份当前文件。</p>
         </div>
-      </div>
-
-      <div class="panel">
-        <h2>只读配置</h2>
-        <div id="set-readonly" class="readonly-block muted">加载中…</div>
-        <p class="note note-warn">搜索索引依赖 JSON 输出，请勿删除</p>
       </div>
 
       <div class="panel">
@@ -437,6 +451,26 @@
 
 <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
 <dialog id="dlg" class="dlg"></dialog>
+<script src="/static/vendor/codemirror/lib/codemirror.js"></script>
+<script src="/static/vendor/codemirror/addon/mode/overlay.js"></script>
+<script src="/static/vendor/codemirror/mode/xml/xml.js"></script>
+<script src="/static/vendor/codemirror/mode/markdown/markdown.js"></script>
+<script src="/static/vendor/codemirror/mode/gfm/gfm.js"></script>
+<script src="/static/vendor/codemirror/mode/toml/toml.js"></script>
+<script src="/static/vendor/codemirror/mode/yaml/yaml.js"></script>
+<script src="/static/vendor/codemirror/mode/javascript/javascript.js"></script>
+<script src="/static/vendor/codemirror/mode/css/css.js"></script>
+<script src="/static/vendor/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script src="/static/vendor/codemirror/mode/shell/shell.js"></script>
+<script src="/static/vendor/codemirror/addon/edit/closebrackets.js"></script>
+<script src="/static/vendor/codemirror/addon/edit/matchbrackets.js"></script>
+<script src="/static/vendor/codemirror/addon/edit/continuelist.js"></script>
+<script src="/static/vendor/codemirror/addon/comment/comment.js"></script>
+<script src="/static/vendor/codemirror/addon/comment/continuecomment.js"></script>
+<script src="/static/vendor/codemirror/addon/selection/active-line.js"></script>
+<script src="/static/vendor/codemirror/addon/search/searchcursor.js"></script>
+<script src="/static/vendor/codemirror/addon/search/search.js"></script>
+<script src="/static/vendor/codemirror/addon/dialog/dialog.js"></script>
 <script src="/static/app.js"></script>
 </body>
 </html>

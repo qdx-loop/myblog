@@ -721,6 +721,12 @@ SETTINGS_MAP: list[tuple[str, str, str, str, Callable]] = [
     ("baseURL", "", "baseURL", "str", str),
     ("locale", "", "locale", "str", str),
     ("theme", "", "theme", "str", str),
+    ("copyright", "", "copyright", "str", str),
+    ("languageCode", "", "languageCode", "str", str),
+    ("defaultContentLanguage", "", "defaultContentLanguage", "str", str),
+    ("enableRobotsTXT", "", "enableRobotsTXT", "bool", bool),
+    ("enableEmoji", "", "enableEmoji", "bool", bool),
+    ("buildDrafts", "", "buildDrafts", "bool", bool),
     ("author", "params", "author", "str", str),
     ("defaultTheme", "params", "defaultTheme", "str", str),
     ("dateFormat", "params", "dateFormat", "str", str),
@@ -730,6 +736,7 @@ SETTINGS_MAP: list[tuple[str, str, str, str, Callable]] = [
     ("ShowBreadCrumbs", "params", "ShowBreadCrumbs", "bool", bool),
     ("comments", "params", "comments", "bool", bool),
     ("enableSearch", "params", "enableSearch", "bool", bool),
+    ("mainSections", "params", "mainSections", "array", list),
     ("homeTitle", "params.homeInfoParams", "Title", "str", str),
     ("homeContent", "params.homeInfoParams", "Content", "str", str),
     ("searchEnable", "params.search", "enable", "bool", bool),
@@ -738,6 +745,7 @@ SETTINGS_MAP: list[tuple[str, str, str, str, Callable]] = [
     ("fuseThreshold", "params.search.fuseOpts", "threshold", "float", float),
     ("fuseLocation", "params.search.fuseOpts", "location", "int", int),
     ("fuseDistance", "params.search.fuseOpts", "distance", "int", int),
+    ("fuseCaseSensitive", "params.search.fuseOpts", "isCaseSensitive", "bool", bool),
     ("walineEnable", "params.waline", "enable", "bool", bool),
     ("walineServer", "params.waline", "serverURL", "str", str),
     ("walinePlaceholder", "params.waline", "placeholder", "str", str),
@@ -747,6 +755,9 @@ SETTINGS_MAP: list[tuple[str, str, str, str, Callable]] = [
     ("walinePageSize", "params.waline", "pageSize", "int", int),
     ("walineUpload", "params.waline", "upload", "bool", bool),
     ("walineEmoji", "params.waline", "emoji", "bool", bool),
+    ("goldmarkUnsafe", "markup.goldmark.renderer", "unsafe", "bool", bool),
+    ("goldmarkHardWraps", "markup.goldmark.renderer", "hardWraps", "bool", bool),
+    ("outputsHome", "outputs", "home", "array", list),
 ]
 
 

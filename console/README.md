@@ -23,12 +23,38 @@ PORT=9000 bash console/run.sh  # 换端口
 | 标签 | 作用 |
 |---|---|
 | 仪表盘 | 站点信息（标题、baseURL、文章/草稿数、Hugo 版本、分支、最近提交）+ 快捷按钮（新建文章 / 构建校验 / 启动预览） |
-| 文章 | 左侧列表（搜索、仅草稿、按日期排序），右侧 front matter 表单 + Markdown 编辑 + 实时预览；新建/保存/删除/上传图片；`Ctrl+S` 保存 |
-| 设置 | 表单模式可视化改 `hugo.toml`（保留注释），或原文模式整文件编辑 + 校验；备份列表可恢复 |
-| 文件 | 全仓库目录树、文本编辑、二进制下载、新建/重命名/删除（回收站）、全文搜索 |
+| 文章 | 左侧列表（搜索、仅草稿、按日期排序），右侧 front matter 表单 + CodeMirror Markdown 编辑器 + 实时预览；新建/保存/删除/上传图片；`Ctrl+S` 保存 |
+| 设置 | 表单模式可视化改 `hugo.toml`（保留注释，41 项覆盖站点/显示/首页/搜索/内容输出/Markdown/评论/菜单），或原文模式整文件编辑 + 校验；备份列表可恢复 |
+| 文件 | 全仓库目录树、按后缀高亮的编辑器、二进制下载、新建/重命名/删除（回收站）、全文搜索（命中行自动定位高亮） |
 | 预览 | 启停 `hugo server`（`127.0.0.1:1313`），内嵌 iframe 看真实站点 |
 | 发布 | 提交信息、范围（仅 posts / 全部）、构建校验选项、演练模式；开始发布 / 连通性测试 / 拉取合并 / 强制推送，带实时日志 |
 | Git | `git status` 变更列表（看 diff、单文件回滚）、最近提交（看 `git show`）、领先/落后计数 |
+
+## 编辑器
+
+文章正文与文件编辑器用 **CodeMirror 5.65.16**（MIT），已随仓库放在 `console/static/vendor/codemirror/`，**不依赖 CDN/npm**。
+
+- 按文件后缀自动选高亮：Markdown 用 `gfm`（标题/粗体/代码/引用/列表分色），`toml`、`yaml`、`json`、`js`、`css`、`html`、`xml`、`sh` 同理。
+- 行号、当前行高亮、括号匹配、自动闭合括号、Markdown 列表回车续写。
+- 快捷键：`Ctrl+S` 保存、`Ctrl+F` 查找、`Shift+Ctrl+F` 替换、`Ctrl+/` 切换注释、`Ctrl+B` 粗体、`Ctrl+I` 斜体、`Tab`/`Shift+Tab` 缩进。
+- 工具栏：粗体、斜体、标题、行内代码、代码块、链接、图片、无序列表、有序列表、引用、分隔线。
+- 图片可直接拖到编辑器里上传并插入 Markdown；正文下方实时预览与字数统计。
+- 文件页搜索命中行会自动选中并短暂高亮；二进制文件显示「不可编辑」+ 下载链接。
+
+## 设置面板覆盖的键
+
+| 分组 | 键 |
+|---|---|
+| 站点 | `title` `baseURL` `locale` `theme` `languageCode` `defaultContentLanguage` `copyright` `enableRobotsTXT` `enableEmoji` `buildDrafts` |
+| 显示 | `params.author` `defaultTheme` `dateFormat` `ShowReadingTime` `ShowShareButtons` `ShowPostNavLinks` `ShowBreadCrumbs` `comments` `enableSearch` |
+| 首页 | `params.homeInfoParams.Title` `.Content` |
+| 搜索 | `params.search.enable` `.limit`；`params.search.fuseOpts.keys` `threshold` `location` `distance` `isCaseSensitive` |
+| 内容与输出 | `params.mainSections`、`outputs.home`（保留 JSON，否则搜索索引失效） |
+| Markdown 渲染 | `markup.goldmark.renderer.unsafe` `hardWraps` |
+| 评论 Waline | `params.waline.enable` `serverURL` `placeholder` `login` `requiredMeta` `wordLimit` `pageSize` `upload` `emoji` |
+| 导航菜单 | `[[menu.main]]` 的 `identifier` `name` `url` `weight` |
+
+表单模式「按表定位、只改值」：未改动的键不写盘、不产生备份；缺省键在首次改动时插入到正确表（如 `[markup.goldmark.renderer]` 不存在则追加整表）。其余未列入表单的配置原样保留，也可用原文模式整体编辑。
 
 ## 运行期数据（都在仓库外：`~/.config/myblog-console/`）
 
@@ -138,5 +164,8 @@ console/
 ├── toml_edit.py      hugo.toml 按表定位改值（保留注释）+ 校验
 ├── run.sh            启动器
 ├── README.md         本文件
-└── static/           前端（index.html / app.js / style.css）
+└── static/
+    ├── index.html / app.js / style.css   前端
+    └── vendor/codemirror/                CodeMirror 5.65.16（MIT，本地）
+
 ```

@@ -1226,3 +1226,84 @@ pre.log-sm { max-height: 100%; min-height: 120px; }
   .set-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .action-bar { margin: 0; position: static; }
 }
+
+/* ============================================================
+   CodeMirror 编辑器（本地 vendor；配色跟随主题变量）
+   ============================================================ */
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.md-toolbar { display: flex; flex-wrap: wrap; gap: 4px; }
+.md-toolbar .btn { padding: 2px 9px; font-size: 12px; }
+.md-status { margin-top: 6px; font-size: 12px; }
+.md-host { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: var(--input-bg); }
+
+.cm-host.CodeMirror {
+  height: auto;
+  min-height: 320px;
+  background: var(--input-bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.cm-host .CodeMirror-scroll { max-height: 58vh; }
+.cm-host.cm-file.CodeMirror { min-height: 380px; }
+.cm-host.cm-file .CodeMirror-scroll { max-height: calc(100vh - 300px); }
+
+.cm-host .CodeMirror-gutters {
+  background: var(--code-bg);
+  border-right: 1px solid var(--border);
+}
+.cm-host .CodeMirror-linenumber { color: var(--muted); }
+.cm-host .CodeMirror-cursor { border-left: 2px solid var(--accent); }
+.cm-host .CodeMirror-selected { background: rgba(59, 130, 246, 0.22); }
+.cm-host .CodeMirror-focused .CodeMirror-selected { background: rgba(59, 130, 246, 0.3); }
+.cm-host .CodeMirror-activeline-background { background: rgba(255, 255, 255, 0.03); }
+.cm-host .CodeMirror-matchingbracket {
+  color: #7dd3fc;
+  border-bottom: 1px solid #7dd3fc;
+}
+.cm-host .cm-hit-line { background: rgba(210, 153, 34, 0.16); }
+.cm-host.is-drop { outline: 2px dashed var(--accent); outline-offset: -3px; }
+
+/* 语法着色 */
+.cm-host .cm-header { color: #93c5fd; font-weight: 600; }
+.cm-host .cm-strong { color: #fbbf24; font-weight: 600; }
+.cm-host .cm-em { color: #f9a8d4; }
+.cm-host .cm-link { color: #7dd3fc; text-decoration: underline; }
+.cm-host .cm-url { color: var(--muted); }
+.cm-host .cm-quote { color: #a3e635; font-style: italic; }
+.cm-host .cm-comment { color: #6b7280; font-style: italic; }
+.cm-host .cm-string { color: #86efac; }
+.cm-host .cm-number { color: #fca5a5; }
+.cm-host .cm-keyword { color: #c084fc; }
+.cm-host .cm-atom { color: #f472b6; }
+.cm-host .cm-def { color: #93c5fd; }
+.cm-host .cm-property { color: #7dd3fc; }
+.cm-host .cm-variable-2 { color: #c4b5fd; }
+.cm-host .cm-formatting { color: var(--muted); }
+
+/* 查找对话框（addon/dialog） */
+.CodeMirror-dialog {
+  background: var(--panel-2);
+  color: var(--fg);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 6px 10px;
+}
+.CodeMirror-dialog input {
+  background: var(--input-bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-family: var(--mono);
+}
+.CodeMirror-dialog button { display: none; }

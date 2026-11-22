@@ -92,8 +92,14 @@ function make(tag, className, text) {
   return el;
 }
 
-/** 在 textarea 光标处插入文本，并保持焦点与光标位置 */
+/** 在编辑器光标处插入文本，并保持焦点与光标位置 */
 function insertAtCursor(ta, text) {
+  const cm = editorOf(ta);
+  if (cm) {
+    cm.replaceSelection(text);
+    cm.focus();
+    return;
+  }
   const start = ta.selectionStart ?? ta.value.length;
   const end = ta.selectionEnd ?? ta.value.length;
   ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
@@ -104,6 +110,16 @@ function insertAtCursor(ta, text) {
 }
 
 function selectLine(ta, lineNo) {
+  const cm = editorOf(ta);
+  if (cm) {
+    const line = Math.max(0, Math.min(Number(lineNo) - 1 || 0, cm.lineCount() - 1));
+    cm.focus();
+    cm.setSelection({ line, ch: 0 }, { line, ch: cm.getLine(line).length });
+    cm.scrollIntoView({ line, ch: 0 }, 80);
+    cm.addLineClass(line, "background", "cm-hit-line");
+    setTimeout(() => cm.removeLineClass(line, "background", "cm-hit-line"), 1600);
+    return;
+  }
   const lines = ta.value.split("\n");
   let pos = 0;
   for (let i = 0; i < lineNo - 1 && i < lines.length; i++) pos += lines[i].length + 1;
@@ -113,6 +129,273 @@ function selectLine(ta, lineNo) {
   const lh = parseFloat(getComputedStyle(ta).lineHeight) || 20;
   ta.scrollTop = Math.max(0, (lineNo - 4) * lh);
 }
+
+/* ------------------------------------------------------------
+   3b. 编辑器（CodeMirror 5，本地 vendor，无 CDN）
+   ------------------------------------------------------------ */
+const CM_OK = typeof window.CodeMirror === "function";
+const CM_EDITORS = { post: null, file: null };
+
+/** 按扩展名选高亮模式 */
+function modeForPath(path) {
+  const name = String(path || "").split("/").pop().toLowerCase();
+  const ext = name.includes(".") ? name.split(".").pop() : name;
+  const map = {
+    md: "gfm",
+    markdown: "gfm",
+    mdx: "gfm",
+    toml: "toml",
+    yaml: "yaml",
+    yml: "yaml",
+    json: { name: "javascript", json: true },
+    js: "javascript",
+    mjs: "javascript",
+    cjs: "javascript",
+    css: "css",
+    html: "htmlmixed",
+    htm: "htmlmixed",
+    xml: "xml",
+    svg: "xml",
+    sh: "shell",
+    bash: "shell",
+    zsh: "shell",
+    py: null,
+    txt: null,
+  };
+  return map[ext] ?? null;
+}
+
+function cmCommonOptions(mode, kind) {
+  return {
+    mode,
+    lineNumbers: true,
+    lineWrapping: true,
+    indentUnit: 2,
+    tabSize: 2,
+    indentWithTabs: false,
+    styleActiveLine: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    continueComments: "Enter",
+    extraKeys: {
+      // 查找/替换（search + dialog 插件）
+      "Ctrl-F": "find",
+      "Cmd-F": "find",
+      "Shift-Ctrl-F": "replace",
+      "Shift-Cmd-F": "replace",
+      "Ctrl-/": "toggleComment",
+      "Cmd-/": "toggleComment",
+      Tab: (cm) => {
+        if (cm.somethingSelected()) cm.indentSelection("add");
+        else cm.replaceSelection("  ", "end");
+      },
+      "Shift-Tab": (cm) => cm.indentSelection("subtract"),
+      ...(kind === "post"
+        ? {
+            "Ctrl-B": (cm) => mdAction("bold", cm),
+            "Cmd-B": (cm) => mdAction("bold", cm),
+            "Ctrl-I": (cm) => mdAction("italic", cm),
+            "Cmd-I": (cm) => mdAction("italic", cm),
+          }
+        : {}),
+    },
+  };
+}
+
+/** 延迟到编辑器可见后再测量尺寸，避免隐藏容器里高度为 0 */
+function cmRefresh(kind) {
+  const cm = CM_EDITORS[kind];
+  if (cm) requestAnimationFrame(() => cm.refresh());
+}
+
+function ensurePostEditor() {
+  if (!CM_OK) return null;
+  if (CM_EDITORS.post) return CM_EDITORS.post;
+  const ta = $("post-body");
+  if (!ta) return null;
+  let cm;
+  try {
+    cm = CodeMirror.fromTextArea(ta, cmCommonOptions("gfm", "post"));
+  } catch (err) {
+    console.error("CodeMirror 初始化失败，回退纯文本输入框", err);
+    return null;
+  }
+  cm.getWrapperElement().classList.add("cm-host", "cm-post");
+  cm.on("change", () => onPostBodyEdited());
+  bindPostDropTarget(cm.getWrapperElement());
+  CM_EDITORS.post = cm;
+  updateMdStatus();
+  return cm;
+}
+
+function ensureFileEditor() {
+  if (!CM_OK) return null;
+  if (CM_EDITORS.file) return CM_EDITORS.file;
+  const ta = $("file-content");
+  if (!ta) return null;
+  ta.hidden = false;
+  let cm;
+  try {
+    cm = CodeMirror.fromTextArea(ta, cmCommonOptions(null, "file"));
+  } catch (err) {
+    console.error("CodeMirror 初始化失败，回退纯文本输入框", err);
+    return null;
+  }
+  cm.getWrapperElement().classList.add("cm-host", "cm-file");
+  cm.on("change", () => updateFileDirty());
+  CM_EDITORS.file = cm;
+  return cm;
+}
+
+function showFileEditor(visible) {
+  const cm = CM_EDITORS.file;
+  if (cm) cm.getWrapperElement().hidden = !visible;
+  const ta = $("file-content");
+  if (ta) ta.hidden = !visible || !!cm;
+}
+
+function editorOf(el) {
+  if (!el) return null;
+  if (el.id === "post-body") return CM_EDITORS.post;
+  if (el.id === "file-content") return CM_EDITORS.file;
+  return null;
+}
+
+/** 读取编辑器文本（CM 优先，回退 textarea） */
+function editorText(el) {
+  const cm = editorOf(el);
+  if (cm) return cm.getValue();
+  return el ? el.value : "";
+}
+
+/** 写入编辑器文本，保留光标尽量靠后 */
+function editorSetText(el, text) {
+  const value = text == null ? "" : String(text);
+  const cm = editorOf(el);
+  if (cm) {
+    if (cm.getValue() !== value) cm.setValue(value);
+    cm.clearHistory();
+    return;
+  }
+  if (el) el.value = value;
+}
+
+function editorFocus(el) {
+  const cm = editorOf(el);
+  if (cm) cm.focus();
+  else if (el) el.focus();
+}
+
+/** 正文变化：脏标记 + 字数 + 延迟渲染预览 */
+function onPostBodyEdited() {
+  updatePostDirty();
+  updateMdStatus();
+  clearTimeout(STATE.mdPreviewTimer);
+  STATE.mdPreviewTimer = setTimeout(renderPostPreview, 200);
+}
+
+function updateMdStatus() {
+  const box = $("md-status");
+  if (!box) return;
+  const text = editorText($("post-body"));
+  const lines = text ? text.split("\n").length : 0;
+  const cjk = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+  const latin = (text.match(/[A-Za-z0-9]+/g) || []).length;
+  box.textContent = `${cjk + latin} 字 · ${lines} 行`;
+}
+
+/** 给选中行加/去前缀 */
+function prefixSelectedLines(cm, prefix) {
+  const sel = cm.listSelections();
+  if (!sel.length) return;
+  const ranges = sel.map((r) => {
+    const from = Math.min(r.anchor.line, r.head.line);
+    const to = Math.max(r.anchor.line, r.head.line);
+    return { from, to };
+  });
+  // 从后往前改，避免行号漂移
+  ranges.sort((a, b) => b.from - a.from);
+  for (const { from, to } of ranges) {
+    const lines = [];
+    for (let i = from; i <= to; i++) lines.push(cm.getLine(i));
+    const allPrefixed = lines.every((l) => l.startsWith(prefix) || l.trim() === "");
+    const next = lines.map((l) => {
+      if (allPrefixed) return l.startsWith(prefix) ? l.slice(prefix.length) : l;
+      return l.trim() === "" ? l : prefix + l;
+    });
+    cm.replaceRange(
+      next.join("\n"),
+      { line: from, ch: 0 },
+      { line: to, ch: cm.getLine(to).length }
+    );
+  }
+}
+
+function mdAction(kind, cm) {
+  if (!cm) return;
+  const sel = cm.getSelection();
+  switch (kind) {
+    case "bold":
+      cm.replaceSelection(`**${sel || "粗体"}**`, "around");
+      break;
+    case "italic":
+      cm.replaceSelection(`*${sel || "斜体"}*`, "around");
+      break;
+    case "code":
+      cm.replaceSelection("`" + (sel || "代码") + "`", "around");
+      break;
+    case "codeblock": {
+      const body = sel || "代码";
+      cm.replaceSelection("```\n" + body + "\n```\n");
+      break;
+    }
+    case "link":
+      cm.replaceSelection(`[${sel || "链接文字"}](https://)`);
+      break;
+    case "image":
+      cm.replaceSelection(`![${sel || "图片说明"}](/images/)`);
+      break;
+    case "ul":
+      prefixSelectedLines(cm, "- ");
+      break;
+    case "ol":
+      prefixSelectedLines(cm, "1. ");
+      break;
+    case "quote":
+      prefixSelectedLines(cm, "> ");
+      break;
+    case "h2":
+      prefixSelectedLines(cm, "## ");
+      break;
+    case "hr":
+      cm.replaceSelection("\n---\n");
+      break;
+    default:
+      return;
+  }
+  cm.focus();
+}
+
+/** 图片拖放到编辑器（CM 包装元素） */
+function bindPostDropTarget(el) {
+  if (!el) return;
+  el.addEventListener("dragover", (e) => {
+    if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes("Files")) {
+      e.preventDefault();
+      el.classList.add("is-drop");
+    }
+  });
+  el.addEventListener("dragleave", () => el.classList.remove("is-drop"));
+  el.addEventListener("drop", (e) => {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+      e.preventDefault();
+      el.classList.remove("is-drop");
+      guard(() => uploadFiles(e.dataTransfer.files, $("post-body")));
+    }
+  });
+}
+
+
 
 async function copyText(text) {
   try {
@@ -464,6 +747,7 @@ const STATE = {
   fileSnapshot: "",
   job: null,
   previewTimer: null,
+  mdPreviewTimer: null,
 };
 
 let pendingAction = null;
@@ -497,6 +781,8 @@ async function applyRoute() {
   pendingAction = null;
   await guard(refreshStatus);
   await guard(() => loadRoute(route));
+  cmRefresh("post");
+  cmRefresh("file");
   if (action) await guard(action);
 }
 
@@ -732,7 +1018,9 @@ async function openPost(path) {
     ? meta.categories.join(", ")
     : String(meta.categories ?? "");
   $("pm-description").value = meta.description ?? "";
-  $("post-body").value = data.body ?? "";
+  ensurePostEditor();
+  editorSetText($("post-body"), data.body ?? "");
+  updateMdStatus();
   STATE.postSnapshot = postSnapshot();
   updatePostDirty();
   renderPostPreview();
@@ -749,7 +1037,7 @@ function postSnapshot() {
     $("pm-tags").value,
     $("pm-categories").value,
     $("pm-description").value,
-    $("post-body").value,
+    editorText($("post-body")),
   ].join("\u0001");
 }
 
@@ -795,7 +1083,7 @@ async function savePost(etagOverride) {
     res = await api("PUT", "/api/post", {
       path: post.path,
       meta: collectPostMeta(),
-      body: $("post-body").value,
+      body: editorText($("post-body")),
       etag,
     });
   } catch (err) {
@@ -841,7 +1129,7 @@ async function reloadAndSavePost(path) {
 
 function renderPostPreview() {
   const box = $("post-preview");
-  const html = renderMarkdown($("post-body").value);
+  const html = renderMarkdown(editorText($("post-body")));
   box.innerHTML = html || '<p class="md-empty">（正文为空，预览暂无内容）</p>';
 }
 
@@ -949,8 +1237,14 @@ const SET_GROUPS = [
     fields: [
       { key: "title", label: "站点标题", type: "text" },
       { key: "baseURL", label: "站点地址", type: "text", mono: true },
-      { key: "locale", label: "语言", type: "text", mono: true },
+      { key: "locale", label: "语言 locale", type: "text", mono: true },
       { key: "theme", label: "主题", type: "text", mono: true },
+      { key: "languageCode", label: "languageCode", type: "text", mono: true, hint: "如 zh-cn" },
+      { key: "defaultContentLanguage", label: "默认内容语言", type: "text", mono: true },
+      { key: "copyright", label: "版权信息", type: "text" },
+      { key: "enableRobotsTXT", label: "生成 robots.txt", type: "bool" },
+      { key: "enableEmoji", label: "启用 emoji 短代码", type: "bool" },
+      { key: "buildDrafts", label: "构建时包含草稿", type: "bool" },
     ],
   },
   {
@@ -983,6 +1277,22 @@ const SET_GROUPS = [
       { key: "fuseThreshold", label: "阈值 threshold", type: "number", step: "0.05" },
       { key: "fuseLocation", label: "位置 location", type: "number", step: "1" },
       { key: "fuseDistance", label: "距离 distance", type: "number", step: "1" },
+      { key: "fuseCaseSensitive", label: "区分大小写", type: "bool" },
+    ],
+  },
+  {
+    title: "内容与输出",
+    note: "搜索索引依赖 JSON 输出：outputs.home 里请保留 JSON，否则搜索页会失效。",
+    fields: [
+      { key: "mainSections", label: "主要内容目录", type: "list", hint: "默认 posts，逗号分隔" },
+      { key: "outputsHome", label: "首页输出格式", type: "list", hint: "HTML, RSS, JSON（逗号分隔）" },
+    ],
+  },
+  {
+    title: "Markdown 渲染",
+    fields: [
+      { key: "goldmarkUnsafe", label: "允许原始 HTML", type: "bool", hint: "正文里直接写 HTML 标签时需要" },
+      { key: "goldmarkHardWraps", label: "单换行即断行", type: "bool", hint: "回车渲染为 <br>" },
     ],
   },
   {
@@ -1056,6 +1366,7 @@ function buildSettingsForm() {
     const rows = make("div", "set-rows");
     for (const field of group.fields) rows.appendChild(buildSettingField(field));
     panel.appendChild(rows);
+    if (group.note) panel.appendChild(make("p", "note note-warn", group.note));
     wrap.appendChild(panel);
   }
 }
@@ -1071,7 +1382,6 @@ function fillSettingsForm(data) {
     else input.value = value === undefined || value === null ? "" : String(value);
   }
   renderMenuRows((data && data.menu) || []);
-  renderReadonly((data && data.readonly) || {});
   const raw = $("set-raw");
   raw.value = (data && data.raw) || "";
 }
@@ -1153,20 +1463,6 @@ function collectMenu() {
     if (item.identifier || item.name || item.url) rows.push(item);
   }
   return rows;
-}
-
-function renderReadonly(readonly) {
-  const box = $("set-readonly");
-  clearNode(box);
-  const entries = Object.entries(readonly || {});
-  if (!entries.length) {
-    box.textContent = "（后端未返回只读配置）";
-    return;
-  }
-  for (const [key, value] of entries) {
-    const text = Array.isArray(value) ? value.join(", ") : String(value);
-    box.appendChild(make("div", "", `${key} = [${text}]`));
-  }
 }
 
 function setSettingsMode(mode) {
@@ -1371,7 +1667,7 @@ async function openFile(path, hit) {
   const binaryBox = $("file-binary");
 
   if (data.binary) {
-    ta.hidden = true;
+    showFileEditor(false);
     body.classList.remove("is-code");
     binaryBox.hidden = false;
     const link = $("file-binary-link");
@@ -1383,10 +1679,12 @@ async function openFile(path, hit) {
   }
 
   binaryBox.hidden = true;
-  ta.hidden = false;
   body.classList.add("is-code");
-  ta.value = data.content || "";
-  STATE.fileSnapshot = ta.value;
+  const fileCm = ensureFileEditor();
+  if (fileCm) fileCm.setOption("mode", modeForPath(data.path));
+  editorSetText(ta, data.content || "");
+  showFileEditor(true);
+  STATE.fileSnapshot = editorText(ta);
   updateFileDirty();
 
   const banner = $("file-hit");
@@ -1416,7 +1714,7 @@ async function openFile(path, hit) {
 
 function updateFileDirty() {
   const ta = $("file-content");
-  const dirty = !!STATE.currentFile && !STATE.currentFile.binary && ta.value !== STATE.fileSnapshot;
+  const dirty = !!STATE.currentFile && !STATE.currentFile.binary && editorText(ta) !== STATE.fileSnapshot;
   $("file-dirty").hidden = !dirty;
   return dirty;
 }
@@ -1434,7 +1732,7 @@ async function saveFile(etagOverride) {
   const etag = etagOverride || file.etag;
   let res;
   try {
-    res = await api("PUT", "/api/file", { path: file.path, content: $("file-content").value, etag });
+    res = await api("PUT", "/api/file", { path: file.path, content: editorText($("file-content")), etag });
   } catch (err) {
     if (err instanceof ApiError && err.isConflict) {
       const overwrite = await confirmConflict(`路径：${file.path}`);
@@ -1451,7 +1749,7 @@ async function saveFile(etagOverride) {
     return;
   }
   file.etag = res && res.etag ? res.etag : file.etag;
-  STATE.fileSnapshot = $("file-content").value;
+  STATE.fileSnapshot = editorText($("file-content"));
   updateFileDirty();
   toastOk(`已保存 ${file.path}`);
 }
@@ -1526,7 +1824,7 @@ async function deleteFileDialog() {
     return;
   }
   STATE.currentFile = null;
-  $("file-content").hidden = true;
+  showFileEditor(false);
   $("file-binary").hidden = true;
   $("file-empty").hidden = false;
   $("file-editor-body").classList.remove("is-code");
@@ -2159,31 +2457,22 @@ function bindEvents() {
   });
 
   const body = $("post-body");
-  let previewTimer = null;
-  body.addEventListener("input", () => {
-    updatePostDirty();
-    if (previewTimer) clearTimeout(previewTimer);
-    previewTimer = setTimeout(renderPostPreview, 200);
-  });
+  body.addEventListener("input", onPostBodyEdited);
   for (const id of ["pm-title", "pm-date", "pm-weight", "pm-author", "pm-tags", "pm-categories", "pm-description"]) {
     $(id).addEventListener("input", updatePostDirty);
   }
   $("pm-draft").addEventListener("change", updatePostDirty);
 
-  body.addEventListener("dragover", (e) => {
-    if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes("Files")) {
-      e.preventDefault();
-      body.classList.add("is-drop");
-    }
+  /* Markdown 工具栏：作用于 CodeMirror 选区 */
+  $("md-toolbar").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-md]");
+    if (!btn) return;
+    ensurePostEditor();
+    if (CM_EDITORS.post) mdAction(btn.dataset.md, CM_EDITORS.post);
   });
-  body.addEventListener("dragleave", () => body.classList.remove("is-drop"));
-  body.addEventListener("drop", (e) => {
-    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
-      e.preventDefault();
-      body.classList.remove("is-drop");
-      guard(() => uploadFiles(e.dataTransfer.files, body));
-    }
-  });
+
+  /* 图片拖放：CM 未加载时兜底到 textarea（加载后由包装元素接管） */
+  bindPostDropTarget(body);
 
   /* --- 设置 --- */
   $("set-mode-form").addEventListener("click", () => setSettingsMode("form"));
