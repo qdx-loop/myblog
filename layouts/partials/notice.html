@@ -1,0 +1,31 @@
+{{- /* 全站通告横幅：数据来自 data/notice.toml，enabled=false 时不输出任何内容 */ -}}
+{{- $n := site.Data.notice -}}
+{{- if and $n $n.enabled $n.text -}}
+{{- $level := $n.level | default "info" -}}
+<aside class="site-notice site-notice-{{ $level }}" data-notice-id="{{ $n.id | default "default" }}" role="status" aria-live="polite">
+  <div class="site-notice-inner">
+    {{- with $n.title }}
+    <strong class="site-notice-title">{{ . }}</strong>
+    {{- end }}
+    <div class="site-notice-text md-content">{{ $n.text | $.Page.RenderString (dict "display" "block") }}</div>
+    {{- with $n.link }}
+    <a class="site-notice-link" href="{{ . }}"{{ if hasPrefix . "http" }} target="_blank" rel="noopener"{{ end }}>{{ $n.linkText | default "查看详情" }}</a>
+    {{- end }}
+    {{- if $n.dismissible }}
+    <button class="site-notice-close" type="button" aria-label="关闭通告" title="关闭">&#215;</button>
+    {{- end }}
+  </div>
+</aside>
+<script>
+  (function () {
+    var el = document.querySelector(".site-notice[data-notice-id='{{ $n.id | default "default" }}']");
+    if (!el) return;
+    var btn = el.querySelector(".site-notice-close");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      el.hidden = true;
+      try { localStorage.setItem("notice-dismissed:{{ $n.id | default "default" }}", "1"); } catch (e) {}
+    });
+  })();
+</script>
+{{- end -}}

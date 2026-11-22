@@ -1,0 +1,20 @@
+# 全站通告（站内横幅）
+# 改完保存即生效：hugo server 会自动重建；线上需推送后由 Cloudflare Pages 重新部署。
+#
+# enabled     = 是否显示。false 时整段代码不输出任何 HTML（站点外观完全不变）
+# id          = 通告唯一标识。换一个新 id，曾点过「关闭」的用户会重新看到
+# level       = info（琥珀）/ warn（橙）/ danger（红）
+# title       = 可选，加粗标题
+# text        = 正文，支持 Markdown（**粗体**、[链接](https://)、`代码`）
+# link        = 可选，横幅末尾的跳转链接
+# linkText    = 链接文字，默认「查看详情」
+# dismissible = 是否允许访客关闭（记住在浏览器 localStorage 里，不追踪任何人）
+
+enabled = false
+id = "2026-11-22-1"
+level = "info"
+title = ""
+text = "这是一条全站通告示例：把本文件的 `enabled` 改成 `true` 并填写 `text` 即可对所有访客显示。"
+link = ""
+linkText = "查看详情"
+dismissible = true

@@ -3,3 +3,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 {{- /* Head custom content area end */ -}}
+
+{{- /* 全站通告：已关闭过的访客在首帧就隐藏，避免闪烁（样式见 assets/css/extended/custom.css） */ -}}
+{{- with site.Data.notice }}
+{{- if and .enabled .text .dismissible }}
+<style>.notice-off .site-notice{display:none}</style>
+<script>
+  try {
+    if (localStorage.getItem("notice-dismissed:{{ .id | default "default" }}") === "1") {
+      document.documentElement.classList.add("notice-off");
+    }
+  } catch (e) {}
+</script>
+{{- end }}
+{{- end }}

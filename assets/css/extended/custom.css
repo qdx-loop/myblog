@@ -596,3 +596,59 @@ button, .button {
   color: var(--text-secondary);
   font-style: italic;
 }
+
+/* ==========================================
+   全站通告横幅（data/notice.toml 驱动）
+   ========================================== */
+.site-notice {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.site-notice-inner {
+  max-width: var(--main-width, 720px);
+  margin: 0 auto;
+  padding: 0.7rem 2.5rem 0.7rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  position: relative;
+  border-left: 3px solid var(--accent);
+}
+.site-notice-info .site-notice-inner { border-left-color: var(--accent); }
+.site-notice-warn .site-notice-inner { border-left-color: #f97316; }
+.site-notice-danger .site-notice-inner { border-left-color: #ef4444; }
+.site-notice-title { color: var(--text-primary); white-space: nowrap; }
+.site-notice-text { flex: 1 1 22rem; color: var(--text-secondary); }
+.site-notice-text > :first-child { margin-top: 0; }
+.site-notice-text > :last-child { margin-bottom: 0; }
+.site-notice-text p { display: inline; margin: 0; }
+.site-notice-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  white-space: nowrap;
+}
+.site-notice-link:hover { color: var(--accent-hover); }
+.site-notice-close {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.site-notice-close:hover { color: var(--text-primary); background: var(--border); }
+@media (max-width: 640px) {
+  .site-notice-inner { padding-right: 2.25rem; }
+  .site-notice-text { flex-basis: 100%; }
+}
