@@ -651,7 +651,8 @@ function renderMarkdown(src) {
   };
   const flushPara = () => {
     if (para.length) {
-      out.push(`<p>${inline(para.join(" "))}</p>`);
+      // 单换行即换行：与 hugo.toml 的 markup.goldmark.renderer.hardWraps = true 保持一致
+      out.push(`<p>${para.map((l) => inline(l)).join("<br>")}</p>`);
       para = [];
     }
   };
