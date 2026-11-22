@@ -10,7 +10,7 @@
 # linkText    = 链接文字，默认「查看详情」
 # dismissible = 是否允许访客关闭（记住在浏览器 localStorage 里，不追踪任何人）
 
-enabled = false
+enabled = true
 id = "2026-11-22-1"
 level = "info"
 title = ""
