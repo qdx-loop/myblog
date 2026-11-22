@@ -8,3 +8,8 @@ resources/
 Thumbs.db
 *.tmp
 *.log
+
+# 控制台运行期产物（console/ 源码本身纳入 git）
+console/.venv/
+console/__pycache__/
+*.mbc-tmp
