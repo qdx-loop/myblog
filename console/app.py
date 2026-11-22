@@ -930,6 +930,124 @@ def api_settings_put():
     return jsonify({"ok": True, "raw": new_text, "parsed": parsed, "backup": backup})
 
 
+# ---------------------------------------------------------------------------
+# 步骤 5b — 全站通告（data/notice.toml）
+# ---------------------------------------------------------------------------
+NOTICE_REL = "data/notice.toml"
+NOTICE_DEFAULTS = {
+    "enabled": False,
+    "id": "default",
+    "level": "info",
+    "title": "",
+    "text": "",
+    "link": "",
+    "linkText": "查看详情",
+    "dismissible": True,
+}
+# 键 → 类型（顺序即写回顺序，与模板文件一致）
+NOTICE_KEYS = [
+    ("enabled", "bool"),
+    ("id", "str"),
+    ("level", "str"),
+    ("title", "str"),
+    ("text", "str"),
+    ("link", "str"),
+    ("linkText", "str"),
+    ("dismissible", "bool"),
+]
+NOTICE_LEVELS = ("info", "warn", "danger")
+
+
+def _notice_path() -> Path:
+    return resolve(NOTICE_REL)
+
+
+def _notice_read() -> tuple[str, dict, str | None]:
+    """返回 (raw, data, etag)；文件不存在时 raw='' data=默认值 etag=None。"""
+    p = _notice_path()
+    if not p.is_file():
+        return "", dict(NOTICE_DEFAULTS), None
+    raw_bytes = p.read_bytes()
+    raw = raw_bytes.decode("utf-8", errors="replace")
+    try:
+        parsed = tomllib.loads(raw)
+    except tomllib.TOMLDecodeError as e:
+        raise ApiError(f"data/notice.toml 解析失败: line {e.lineno}: {e.msg}")
+    data = dict(NOTICE_DEFAULTS)
+    data.update({k: parsed[k] for k in NOTICE_DEFAULTS if k in parsed})
+    return raw, data, etag_of(raw_bytes)
+
+
+@app.get("/api/notice")
+def api_notice_get():
+    raw, data, etag = _notice_read()
+    return jsonify({"exists": etag is not None, "data": data, "raw": raw, "etag": etag})
+
+
+@app.put("/api/notice")
+def api_notice_put():
+    body = _json()
+    data = body.get("data")
+    if not isinstance(data, dict):
+        raise ApiError("data 必须是对象")
+    raw, current, etag = _notice_read()
+    want = body.get("etag")
+    if want is not None and etag is not None and want != etag:
+        raise Conflict(etag, raw)
+
+    merged = dict(NOTICE_DEFAULTS)
+    merged.update(current)
+    for key, kind in NOTICE_KEYS:
+        if key not in data:
+            continue
+        v = data[key]
+        if kind == "bool":
+            merged[key] = bool(v)
+        else:
+            merged[key] = "" if v is None else str(v)
+    merged["id"] = merged["id"].strip() or "default"
+    if merged["level"] not in NOTICE_LEVELS:
+        raise ApiError(f"level 只能是 {'/'.join(NOTICE_LEVELS)}")
+    if len(merged["text"]) > 2000:
+        raise ApiError("通告正文过长（上限 2000 字）")
+
+    # 已有文件按“表+键”改值以保留注释；没有文件则新建一份带说明的模板
+    if raw:
+        t = raw
+        for key, kind in NOTICE_KEYS:
+            t = te.set_value(t, "", key, merged[key])
+    else:
+        t = _NOTICE_TEMPLATE
+        for key, kind in NOTICE_KEYS:
+            t = te.set_value(t, "", key, merged[key])
+
+    try:
+        parsed = te.check(t)
+    except tomllib.TOMLDecodeError as e:
+        raise ApiError(f"写回后的 TOML 无效: line {e.lineno}: {e.msg}")
+
+    p = _notice_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    new_bytes = t.encode("utf-8")
+    atomic_write(p, new_bytes)
+    return jsonify(
+        {"ok": True, "data": merged, "raw": t, "parsed": parsed, "etag": etag_of(new_bytes)}
+    )
+
+
+_NOTICE_TEMPLATE = """# 全站通告（站内横幅）
+# enabled=false 时整段代码不输出任何 HTML，站点外观完全不变。
+enabled = false
+id = "default"
+level = "info"
+title = ""
+text = ""
+link = ""
+linkText = "查看详情"
+dismissible = true
+"""
+
+
 @app.get("/api/settings/backups")
 def api_settings_backups():
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)

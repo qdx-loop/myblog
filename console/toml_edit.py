@@ -146,10 +146,21 @@ def find_key(text: str, table: str, key: str) -> tuple[int, int] | None:
     return None
 
 
+_ESCAPES = {
+    "\\": "\\\\",
+    '"': '\\"',
+    "\n": "\\n",
+    "\r": "\\r",
+    "\t": "\\t",
+}
+
+
 def _quote_str(value: str, prefer_single: bool) -> str:
-    if prefer_single and "'" not in value:
+    """TOML 字符串字面量。单/双引号字符串都不能跨行，含换行时必须转义。"""
+    multiline = any(c in value for c in "\n\r")
+    if prefer_single and "'" not in value and not multiline:
         return "'" + value + "'"
-    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return '"' + "".join(_ESCAPES.get(ch, ch) for ch in value) + '"' 
 
 
 def _render_literal(value, prefer_single: bool) -> str:
@@ -211,8 +222,8 @@ def set_value(text: str, table: str, key: str, value) -> str:
             i = v_end
         else:
             i += 1
-    # 缩进跟随表内已有键，默认 2 空格
-    indent = "  "
+    # 缩进跟随表内已有键；根表不加缩进，其余默认 2 空格
+    indent = "" if table == "" else "  "
     for j in range(start + 1, end):
         m = re.match(r"^(\s+)\S+\s*=", lines[j])
         if m:
@@ -263,7 +274,7 @@ def set_array(text: str, table: str, key: str, items: list) -> str:
             i = v_end
         else:
             i += 1
-    indent = "  "
+    indent = "" if table == "" else "  "
     for j in range(start + 1, end):
         m = re.match(r"^(\s+)\S+\s*=", lines[j])
         if m:

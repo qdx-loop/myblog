@@ -24,7 +24,7 @@ PORT=9000 bash console/run.sh  # 换端口
 |---|---|
 | 仪表盘 | 站点信息（标题、baseURL、文章/草稿数、Hugo 版本、分支、最近提交）+ 快捷按钮（新建文章 / 构建校验 / 启动预览） |
 | 文章 | 左侧列表（搜索、仅草稿、按日期排序），右侧 front matter 表单 + CodeMirror Markdown 编辑器 + 实时预览；新建/保存/删除/上传图片；`Ctrl+S` 保存 |
-| 设置 | 表单模式可视化改 `hugo.toml`（保留注释，41 项覆盖站点/显示/首页/搜索/内容输出/Markdown/评论/菜单），或原文模式整文件编辑 + 校验；备份列表可恢复 |
+| 设置 | 表单模式可视化改 `hugo.toml`（保留注释，41 项覆盖站点/显示/首页/搜索/内容输出/Markdown/评论/菜单），或原文模式整文件编辑 + 校验；**全站通告**面板；备份列表可恢复 |
 | 文件 | 全仓库目录树、按后缀高亮的编辑器、二进制下载、新建/重命名/删除（回收站）、全文搜索（命中行自动定位高亮） |
 | 预览 | 启停 `hugo server`（`127.0.0.1:1313`），内嵌 iframe 看真实站点 |
 | 发布 | 提交信息、范围（仅 posts / 全部）、构建校验选项、演练模式；开始发布 / 连通性测试 / 拉取合并 / 强制推送，带实时日志 |
@@ -41,6 +41,23 @@ PORT=9000 bash console/run.sh  # 换端口
 - 图片可直接拖到编辑器里上传并插入 Markdown；正文下方实时预览与字数统计。
 - 单换行即换行：`hugo.toml` 的 `markup.goldmark.renderer.hardWraps = true`，控制台预览与站点渲染一致（可在设置面板「Markdown 渲染」里关闭）。
 - 文件页搜索命中行会自动选中并短暂高亮；二进制文件显示「不可编辑」+ 下载链接。
+
+## 全站通告
+
+设置页底部的「全站通告」面板编辑 `data/notice.toml`，保存后即写入文件（保留文件里的说明注释）：
+
+| 字段 | 说明 |
+|---|---|
+| `enabled` | 开关。`false` 时站点不输出任何通告 HTML |
+| `level` | `info`（琥珀）/ `warn`（橙）/ `danger`（红） |
+| `title` | 可选，加粗标题 |
+| `text` | 正文，支持 Markdown |
+| `link` / `linkText` | 可选跳转链接与文字 |
+| `id` | 通告标识；换新 id 可让已点过「关闭」的访客重新看到 |
+| `dismissible` | 是否允许访客关闭（记在浏览器 localStorage，不追踪） |
+
+显示位置是每个页面导航栏下方（`layouts/partials/notice.html` 由 `baseof.html` 调用，样式在 `assets/css/extended/custom.css`）。
+本地预览会立即重建；线上需「发布」后由 Cloudflare Pages 生效。
 
 ## 设置面板覆盖的键
 
@@ -128,6 +145,8 @@ PUT  /api/post      {path,meta,body,etag}保存文章
 POST /api/post/new  {title,tags,...}     新建文章（自动 slug + weight）
 GET  /api/meta                           tags/categories/weights 补全
 POST /api/upload    (multipart file,dir) 上传图片，返回 markdown 语法
+GET  /api/notice                         全站通告当前值（含 etag）
+PUT  /api/notice    {data,etag}          保存通告（写 data/notice.toml，保留注释）
 GET  /api/settings                       设置表单 + 原文 + 菜单 + 只读项
 PUT  /api/settings  {mode:form|raw,...}  保存设置（form 改值/raw 整文件）
 GET  /api/settings/backups               备份列表

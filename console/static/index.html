@@ -257,6 +257,62 @@
         </div>
       </div>
 
+      <div class="panel" id="notice-panel">
+        <div class="panel-head">
+          <h2>全站通告</h2>
+          <span class="badge" id="nt-state">未启用</span>
+        </div>
+        <p class="note">
+          写入 <code>data/notice.toml</code>，显示在每个页面导航栏下方（<code>false</code> 时站点不输出任何公告 HTML）。
+          本地预览会立即重建，线上需要发布后生效。
+        </p>
+        <div class="field-grid">
+          <label class="field check-field">
+            <span class="field-label">开关</span>
+            <label class="check"><input id="nt-enabled" type="checkbox"><span>对全体访客显示</span></label>
+          </label>
+          <label class="field">
+            <span class="field-label">级别</span>
+            <select id="nt-level" class="input">
+              <option value="info">info · 琥珀</option>
+              <option value="warn">warn · 橙色</option>
+              <option value="danger">danger · 红色</option>
+            </select>
+          </label>
+          <label class="field span-2">
+            <span class="field-label">标题（可选）</span>
+            <input id="nt-title" class="input" type="text" autocomplete="off" placeholder="如：维护通知">
+          </label>
+          <label class="field span-2">
+            <span class="field-label">正文（支持 Markdown）</span>
+            <textarea id="nt-text" class="textarea" rows="3" placeholder="**今晚 23:00** 站点将短暂不可用。"></textarea>
+          </label>
+          <label class="field">
+            <span class="field-label">链接（可选，/ 开头为站内）</span>
+            <input id="nt-link" class="input mono" type="text" autocomplete="off" placeholder="/posts/xxx/">
+          </label>
+          <label class="field">
+            <span class="field-label">链接文字</span>
+            <input id="nt-linkText" class="input" type="text" autocomplete="off" placeholder="查看详情">
+          </label>
+          <label class="field">
+            <span class="field-label">通告 id</span>
+            <input id="nt-id" class="input mono" type="text" autocomplete="off" placeholder="2026-11-22-1">
+          </label>
+          <label class="field check-field">
+            <span class="field-label">允许关闭</span>
+            <label class="check"><input id="nt-dismissible" type="checkbox"><span>访客可点 × 关闭</span></label>
+          </label>
+        </div>
+        <p class="note">换一个新的 id，之前点过关闭的访客会重新看到这条通告。</p>
+        <div class="action-bar">
+          <button class="btn btn-primary" id="nt-save" type="button">保存通告</button>
+          <button class="btn btn-ghost" id="nt-reload" type="button">重新读取</button>
+          <button class="btn btn-ghost" id="nt-preview" type="button">打开本地预览</button>
+          <span id="nt-status" class="muted"></span>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="panel-head">
           <h2>备份</h2>

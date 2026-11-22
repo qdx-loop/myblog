@@ -737,6 +737,7 @@ const STATE = {
   siteUrl: "",
   preview: { running: false, url: "" },
   settings: null,
+  notice: null,
   settingsMode: "form",
   settingsFilled: false,
   meta: { tags: [], categories: [], weights: [] },
@@ -1490,6 +1491,95 @@ async function loadSettings(force) {
   }
   $("set-status").textContent = "";
   loadBackups().catch((err) => toastError(err.message));
+  loadNotice().catch((err) => toastError(`读取通告失败：${err.message}`));
+}
+
+/* ---------- 全站通告（data/notice.toml） ---------- */
+const NOTICE_FIELDS = {
+  enabled: "nt-enabled",
+  id: "nt-id",
+  level: "nt-level",
+  title: "nt-title",
+  text: "nt-text",
+  link: "nt-link",
+  linkText: "nt-linkText",
+  dismissible: "nt-dismissible",
+};
+
+function fillNotice(data) {
+  const d = data || {};
+  for (const [key, id] of Object.entries(NOTICE_FIELDS)) {
+    const el = $(id);
+    if (!el) continue;
+    if (el.type === "checkbox") el.checked = !!d[key];
+    else el.value = d[key] === undefined || d[key] === null ? "" : String(d[key]);
+  }
+  renderNoticeState(d);
+}
+
+function renderNoticeState(d) {
+  const badge = $("nt-state");
+  if (!badge) return;
+  const on = !!d.enabled && String(d.text || "").trim() !== "";
+  badge.className = "badge " + (on ? (d.level === "danger" ? "badge-danger" : d.level === "warn" ? "badge-warn" : "badge-info") : "");
+  badge.textContent = on ? "正在显示" : "未启用";
+}
+
+function collectNotice() {
+  const out = {};
+  for (const [key, id] of Object.entries(NOTICE_FIELDS)) {
+    const el = $(id);
+    if (!el) continue;
+    out[key] = el.type === "checkbox" ? el.checked : el.value;
+  }
+  return out;
+}
+
+async function loadNotice(force) {
+  if (STATE.notice && !force) {
+    fillNotice(STATE.notice.data);
+    return;
+  }
+  const res = await api("GET", "/api/notice");
+  STATE.notice = res;
+  fillNotice(res.data);
+}
+
+async function saveNotice() {
+  const data = collectNotice();
+  if (data.enabled && !String(data.text || "").trim()) {
+    toastError("启用通告前请填写正文");
+    $("nt-text").focus();
+    return;
+  }
+  const body = { data };
+  if (STATE.notice && STATE.notice.etag) body.etag = STATE.notice.etag;
+  let res;
+  try {
+    res = await api("PUT", "/api/notice", body);
+  } catch (err) {
+    if (err instanceof ApiError && err.isConflict) {
+      const ok = await confirmDialog(
+        "通告已被外部修改",
+        "data/notice.toml 已被别处改过（可能在 Obsidian 或其他编辑器）。\n要用当前表单的内容覆盖吗？",
+        { okText: "覆盖", danger: true }
+      );
+      if (!ok.ok) return;
+      delete body.etag;
+      try {
+        res = await api("PUT", "/api/notice", body);
+      } catch (err2) {
+        toastError(err2 instanceof ApiError ? err2.message : `保存失败：${err2.message}`);
+        return;
+      }
+    } else {
+      toastError(err instanceof ApiError ? err.message : `保存失败：${err.message}`);
+      return;
+    }
+  }
+  STATE.notice = res;
+  fillNotice(res.data);
+  toastOk("通告已保存（本地预览会立即更新，线上需发布）");
 }
 
 async function loadBackups() {
@@ -2487,6 +2577,17 @@ function bindEvents() {
   $("set-save").addEventListener("click", saveSettings);
   $("set-reload").addEventListener("click", () => guard(() => loadSettings(true)));
   $("set-backups-refresh").addEventListener("click", () => guard(loadBackups));
+  $("nt-save").addEventListener("click", () => guard(saveNotice));
+  $("nt-enabled").addEventListener("change", () => renderNoticeState(collectNotice()));
+  $("nt-level").addEventListener("change", () => renderNoticeState(collectNotice()));
+  $("nt-text").addEventListener("input", () => renderNoticeState(collectNotice()));
+  $("nt-reload").addEventListener("click", () => guard(() => loadNotice(true)));
+  $("nt-preview").addEventListener("click", () =>
+    guard(async () => {
+      if (!STATE.preview.running) await startPreview();
+      window.open(STATE.preview.url || "http://127.0.0.1:1313/", "_blank", "noopener");
+    })
+  );
   $("set-menu-add").addEventListener("click", () => {
     const tbody = $("set-menu");
     const empty = tbody.querySelector("tr:not([data-row])");
