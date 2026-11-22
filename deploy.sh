@@ -85,7 +85,7 @@ goto_deploy() {
     echo "[INFO] Waiting for Cloudflare Pages..."
     echo "[INFO] Usually takes 1-2 minutes"
     echo
-    echo "[URL] https://lsx.cc.cd/"
+    echo "[URL] https://lssx.de5.net/"
     echo
 }
 

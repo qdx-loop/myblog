@@ -36,7 +36,7 @@ __all__ = [
 
 ROOT = Path(os.environ.get("MYBLOG_ROOT", "/home/qdx/myblog")).resolve()
 BRANCH_NAME = "master"
-SITE_URL = "https://lsx.cc.cd/"
+SITE_URL = "https://lssx.de5.net/"
 
 GITHUB_HTTPS = "https://github.com/qdx-loop/myblog.git"
 GITHUB_SSH = "git@github.com:qdx-loop/myblog.git"

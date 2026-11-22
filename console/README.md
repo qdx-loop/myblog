@@ -39,6 +39,7 @@ PORT=9000 bash console/run.sh  # 换端口
 - 快捷键：`Ctrl+S` 保存、`Ctrl+F` 查找、`Shift+Ctrl+F` 替换、`Ctrl+/` 切换注释、`Ctrl+B` 粗体、`Ctrl+I` 斜体、`Tab`/`Shift+Tab` 缩进。
 - 工具栏：粗体、斜体、标题、行内代码、代码块、链接、图片、无序列表、有序列表、引用、分隔线。
 - 图片可直接拖到编辑器里上传并插入 Markdown；正文下方实时预览与字数统计。
+- 单换行即换行：`hugo.toml` 的 `markup.goldmark.renderer.hardWraps = true`，控制台预览与站点渲染一致（可在设置面板「Markdown 渲染」里关闭）。
 - 文件页搜索命中行会自动选中并短暂高亮；二进制文件显示「不可编辑」+ 下载链接。
 
 ## 设置面板覆盖的键
@@ -78,7 +79,7 @@ askpass.sh    # 仅当配置了 github_token 时生成，供 HTTPS 推送鉴权
 
 > 传输可用性随网络环境变化：实测同一台机器在不同时间 22 端口时通时断，故保留三条回退链。
 > 「演练模式」用 `git push --dry-run`，走同一鉴权路径但不改远端。
-> 推送成功后由 **Cloudflare Pages** 自动构建部署，通常 1–2 分钟，站点 `https://lsx.cc.cd/`。
+> 推送成功后由 **Cloudflare Pages** 自动构建部署，通常 1–2 分钟，站点 `https://lssx.de5.net/`。
 
 配置 token：
 
