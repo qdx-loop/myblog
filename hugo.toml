@@ -1,7 +1,7 @@
 # ==========================================
 # 基础配置
 # ==========================================
-baseURL = 'https://lsx.cc.cd/'
+baseURL = 'https://lssx.de5.net/'
 locale = 'zh-CN'
 title = 'LS - Blog'
 theme = 'PaperMod'
@@ -97,3 +97,6 @@ theme = 'PaperMod'
   name = "搜索"
   url = "/search/"
   weight = 10
+
+[markup.goldmark.renderer]
+  hardWraps = true
