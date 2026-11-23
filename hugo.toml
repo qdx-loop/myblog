@@ -59,7 +59,7 @@ theme = 'PaperMod'
     login = "disable"
     # 必填项：["nick"] 表示只需要昵称（用户名）
     #        ["nick", "mail"] 表示需要昵称和邮箱
-    requiredMeta = ["nick"]
+    requiredMeta = ["none"]
     wordLimit = 0
     pageSize = 10
     upload = true
